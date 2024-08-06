@@ -1,10 +1,15 @@
 from datetime import datetime
-from app import db, login_manager, bcrypt, secret_key
+from app import db, login_manager
 from flask_login import UserMixin
 from flask import current_app
 import os
 import secrets
 import json
+from flask_sqlalchemy import SQLAlchemy
+
+
+
+
 
 
 

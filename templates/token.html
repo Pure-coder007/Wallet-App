@@ -1,0 +1,24 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<div class="otp" >
+
+    <form action="" method='POST' style="display: flex; flex-direction: column; align-items: center;">
+        <h1>Enter 4 digit OTP code</h1>
+        <p>Sent to {{ email|mask_email }}***</p>
+        <br>
+        <input type="number" name="otp" id="number" placeholder="Enter OTP" style="width: 300px; padding: 10px; margin-bottom: 10px; box-sizing: border-box; border-radius: 10px; border: 1px solid rgb(68, 61, 251);" required >
+        <br>
+        <br>
+        <button type="submit" style="padding: 10px; background-color: #4caf50; color: white; border: none; cursor: pointer; border-radius: 10px;">Submit</button>
+    </form>
+</div>
+
+<style>
+    .otp{
+        margin-top: 200px;
+        margin-bottom: 100px;
+
+    }
+</style>
+{% endblock content %}

@@ -1,0 +1,65 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<div class="container">
+    <div class="user_view">
+        <img src="{{ url_for('static', filename='images/gold.png') }}" alt="" style="width: 5rem; height: 4rem; margin-top: 2rem; margin-left: 1rem;">
+        <img src="{{ url_for('static', filename='images/master.png') }}" alt="" style="width: 6rem; height: 6rem; margin-top: 10.5rem; margin-left: 16rem; position: absolute;">
+        <p>VALID</p>
+
+    </div>
+</div>
+
+<style>
+    .user_view{
+        height: 20rem;
+        width: 30rem;
+        background: linear-gradient(to right, #6a11cb, #2575fc); /* Gradient background */
+        border-radius: 0.9rem;
+        margin-top: 3rem;
+        padding-left: 1rem;
+        padding-top: 3rem;
+    }
+
+    @media screen and (max-width: 576px) {
+        .user_view{
+            width: 100% !important;
+            height: 13rem !important;
+        }
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const toggleBalance = document.getElementById('toggle_balance');
+        const walletBalance = document.getElementById('wallet_balance');
+        let balanceVisible = true;
+        const originalBalance = '{{ user["wallet_balance"] }}';
+        const formattedBalance = parseFloat(originalBalance).toLocaleString();
+
+        toggleBalance.addEventListener('click', function() {
+            if (balanceVisible) {
+                walletBalance.textContent = '******';
+                toggleBalance.classList.remove('fa-eye');
+                toggleBalance.classList.add('fa-eye-slash');
+            } else {
+                walletBalance.textContent = formattedBalance;
+                toggleBalance.classList.remove('fa-eye-slash');
+                toggleBalance.classList.add('fa-eye');
+            }
+            balanceVisible = !balanceVisible;
+        });
+    });
+</script>
+
+{% endblock %}
+
+
+<!-- <h2>{{ user['first_name'] }}</h2>
+        <br>
+        <h3>Account Balance:</h3>
+        <h3> 
+            ₦<span id="wallet_balance">{{ "{:,.2f}".format(user['wallet_balance']) }}</span>
+            <i id="toggle_balance" class="fas fa-eye" style="cursor: pointer;"></i>
+        </h3> -->
