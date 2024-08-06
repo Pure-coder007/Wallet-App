@@ -7,17 +7,9 @@ from sqlalchemy import create_engine
 
 
 
-secret_key =  'ssdfghjklreaertyuiytrewertyulhe3678oiytr43567iuiuytrewrtuyr3455'
-app = Flask(__name__)
-
-app.config['SECRET_KEY'] = secret_key
-
-# sqlite db
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///wallet_app.db'
-db = SQLAlchemy(app)
-bcrypt = Bcrypt(app)
-login_manager = LoginManager(app)
+# secret_key =  'ssdfghjklreaertyuiytrewertyulhe3678oiytr43567iuiuytrewrtuyr3455'
+# app = Flask(__name__)
 
 
-login_manager.login_view = 'login'
-login_manager.login_message_category = 'info'
+
+
