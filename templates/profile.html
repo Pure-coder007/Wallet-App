@@ -1,0 +1,119 @@
+{% extends "layout.html" %}
+
+{% block content %}  
+
+        <form action="{{ url_for('profile', user_id=current_user.id) }}" method="POST" enctype="multipart/form-data">
+            <div class="container rounded bg-white  mb-5 m-auto">
+                <div class="row m-auto">
+                    <div class="col-md-3 border-right">
+                        
+                        <!-- <div class="d-flex flex-column align-items-center text-center p-3 py-5">&nbsp; <span class="font-weight-bold"></span><span class="text-black-50">{{ current_user.email }}</span><span> </span></div> -->
+                    </div>
+                    <div class="col-md-5 border-right">
+                        <div class="p-3 py-5">
+                            <img 
+                            {% if current_user.profile_picture %} 
+                            src="{{ current_user.profile_picture }}" 
+                            {% else %}
+                            src="{{ url_for('static', filename='images/default.jpeg') }}" 
+                            {% endif %} 
+                            alt="Profile Picture"
+                            class="rounded-circle article-img profile_pic m-auto border d-flex justify-content-center" 
+                            id="display_picture"
+                            style="width: 120px; height: 120px; border-radius: 50%; cursor: pointer;"
+                        >
+
+                        <input type="file" id="profilePicture" name="profile_pic" accept="image/*" class="d-none">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h4 class="text-right">User Profile</h4>
+                            </div>
+                            <div class="row mt-2">
+                                <div class="col-md-6"><label class="labels">Name</label><input type="text" class="form-control" placeholder="first name" value="{{ current_user.first_name }}" disabled></div>
+                                <div class="col-md-6"><label class="labels">Surname</label><input type="text" class="form-control" value="{{ current_user.last_name }}" placeholder="surname" disabled></div>
+                            </div>
+                            <div class="row mt-3">
+                                <div class="col-md-12"><label class="labels">Mobile Number</label><input type="text" class="form-control" placeholder="enter phone number" value="{{ current_user.phone_number }}" disabled></div>
+                            </div>
+
+                            <div class="row mt-3">
+                                <div class="col-md-12"><label class="labels">Email Address</label><input type="text" class="form-control" placeholder="enter phone number" value="{{ current_user.email }}" disabled></div>
+                            </div>
+
+
+                            <div class="mt-5 text-center"><button class="btn btn-primary profile-button" type="submit">Save Profile</button></div>
+                                    
+                            
+                        </div>
+                    </div>
+                   
+                </div>
+            </div>
+
+        </form>
+
+
+    <style>
+ 
+
+.form-control:focus {
+    box-shadow: none;
+    border-color: #BA68C8
+}
+
+.profile-button {
+    background: rgb(99, 39, 120);
+    box-shadow: none;
+    border: none
+}
+
+.profile-button:hover {
+    background: #682773
+}
+
+.profile-button:focus {
+    background: #682773;
+    box-shadow: none
+}
+
+.profile-button:active {
+    background: #682773;
+    box-shadow: none
+}
+
+.back:hover {
+    color: #682773;
+    cursor: pointer
+}
+
+.labels {
+    font-size: 11px
+}
+
+.add-experience:hover {
+    background: #BA68C8;
+    color: #fff;
+    cursor: pointer;
+    border: solid 1px #BA68C8
+}
+    </style>
+
+
+    <script>
+    // JavaScript
+    profile_icon = document.getElementById("display_picture");
+    profile_upload = document.getElementById("profilePicture");
+
+    profile_icon.addEventListener("click", function () {
+        profile_upload.click();
+    });
+
+    profile_upload.addEventListener("change", function () {
+        const selectedFile = this.files[0];
+        if (selectedFile) {
+            // Update the src attribute of the image element with the URL of the selected file
+            profile_icon.src = URL.createObjectURL(selectedFile);
+        }
+    });
+</script>
+
+{% endblock content %}

@@ -201,23 +201,54 @@ def dashboard():
     from models import User
 
     user = current_user 
-    card_expiry = user.card_expiry
-    # format to datetime
-    card_exp = datetime.strptime(card_expiry, '%Y-%m-%d %H:%M:%S.%f')
-    card_expiry_formatted = card_exp.strftime('%m/%y') if card_expiry else ""
     if user:
+        # Convert the card number to a string and format it with spaces
+        card_number = str(user.card_number) if user.card_number else ""
+        card_number_formatted = '     '.join(card_number[i:i+4] for i in range(0, len(card_number), 4)) if card_number else ""
+
+        # Format the card expiry to only show month and year
+        card_expiry = user.card_expiry
+        card_expiry_formatted = ""
+        if card_expiry:
+            card_exp = datetime.strptime(card_expiry, '%Y-%m-%d %H:%M:%S.%f')
+            card_expiry_formatted = card_exp.strftime('%m/%y')
+
         user_data = {
             'first_name': user.first_name,
             'last_name': user.last_name,
             'email': user.email,
             'wallet_balance': user.wallet_balance, 
             'phone_number': user.phone_number,
-            'card_number': user.card_number,
+            'card_number_formatted': card_number_formatted,
             'card_back': user.card_back,
-            'card_expiry': card_expiry_formatted
+            'card_expiry_formatted': card_expiry_formatted
         }
-        # print(formatted_expiry) 
 
+        print('i am here')
         print(user_data, '11111111111111')
     return render_template('dashboard.html', user=user_data)
-    
+
+
+
+
+
+
+# Edit User Profile
+@app.route('/profile', methods=['GET', 'POST'])
+@login_required
+def profile():
+    if request.method == 'POST':
+        
+        profile_pic = request.files['profile_pic']
+        user = current_user
+        if profile_pic:
+            filename = secure_filename(profile_pic.filename)
+            response = cloudinary.uploader.upload(profile_pic, public_id=f"user/{filename}")
+            profile_pic = response['secure_url']
+        
+        
+        db.session.commit()
+        flash('Your profile has been updated', 'success')
+        return redirect(url_for('profile'))
+    return render_template('profile.html')
+

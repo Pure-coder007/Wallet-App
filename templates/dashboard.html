@@ -4,15 +4,22 @@
 
 <div class="container">
     <div class="user_view">
+
+        <p class="balance "> 
+            ₦<span id="wallet_balance">{{ "{:,.2f}".format(user['wallet_balance']) }}</span>
+            <i id="toggle_balance" class="fas fa-eye" style="cursor: pointer;"></i>
+        </p>
+
         <img src="{{ url_for('static', filename='images/gold.png') }}" alt="" style="width: 4rem; height: 3rem; margin-top: 2rem; margin-left: 1rem;">
 
-        <p class="card_number">{{ user["card_number"] }}</p>
-        
-        <img src="{{ url_for('static', filename='images/master.png') }}" alt="" style="width: 6rem; height: 6rem; margin-top: 7rem; margin-left: 16rem; position: absolute;">
+        <p class="card_number text-center mt-2">{{ user["card_number_formatted"] }}</p>
+        <br>
+
+        <img src="{{ url_for('static', filename='images/master.png') }}" alt="" style="width: 6rem; height: 6rem; margin-top: 3rem; margin-left: 21rem; position: absolute;">
         <br>
 
         <div class="valid text-center mt-5">
-            <p style="font-weight: 600; font-size: 0.8rem;">VALID &nbsp; <span style="position: absolute; margin-top: 0.1rem; font-weight: 300; font-size: 1rem;">{{ user["card_expiry"]}}</span></p> 
+            <p style="font-weight: 600; font-size: 0.8rem;">VALID &nbsp; <span style="position: absolute; margin-top: 0.1rem; font-weight: 300; font-size: 1rem;">{{ user["card_expiry_formatted"]}}</span></p> 
             <p style="position: absolute; margin-left: 9.7rem; margin-top: -1.3rem; font-weight: 600; font-size: 0.8rem;">THRU</p>
         </div>
 
@@ -21,15 +28,100 @@
         </div>
 
     </div>
+
+    <div class="all_functions">
+
+        
+        <div class="functions">
+            
+            <div class="first">
+                <div class="wallet">
+                    <a href="#">
+                <img src="{{ url_for('static', filename='images/wallet.svg') }}" alt=""> 
+            </a>
+            <p>To wallet</p>
+                </div>
+                
+                <div class="bank">
+                    <a href="#">
+                        <img src="{{ url_for('static', filename='images/bank.svg') }}" alt=""> 
+                    </a>
+            <p>To Bank</p>
+
+                </div>
+                
+                <div class="piggy">
+                    <a href="#">
+                        <img src="{{ url_for('static', filename='images/piggy.svg') }}" alt=""> 
+                    </a>
+            <p>To Piggy Wallet</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="functions2">
+            <div class="second ">
+                <div class="airtime ">
+                    <a href="#">
+                        <img src="{{ url_for('static', filename='images/airtime.png') }}" alt=""> 
+                    </a>
+            <p>Airtime</p>
+
+                </div>
+                
+                <div class="data ">
+                    <a href="#">
+                        <img src="{{ url_for('static', filename='images/data.svg') }}" alt=""> 
+                    </a>
+                    &nbsp;<p> &nbsp;&nbsp;Data</p>
+                </div>
+                
+                <div class="tv ">
+                    <a href="#">
+                        <img src="{{ url_for('static', filename='images/tv.svg') }}" alt=""> 
+                    </a>
+                    <p>&nbsp;&nbsp;TV</p>
+                </div>
+        
+                <div class="electricity ">
+                    <a href="#">
+                        <img src="{{ url_for('static', filename='images/electric.svg') }}" alt=""> 
+                    </a>
+                    <p>Electricity</p>
+                </div>
+                
+                <div class="betting ">
+                    <a href="#">
+                        <img src="{{ url_for('static', filename='images/betting.svg') }}" alt=""> 
+                    </a>
+                    <p>Betting</p>
+                </div>
+                
+                <div class="more ">
+                    <a href="#">
+                        <img src="{{ url_for('static', filename='images/more.svg') }}" alt=""> 
+                    </a>
+                    <p>&nbsp;&nbsp;More</p>
+                </div>
+            </div>
+        </div>
+        
+    </div>
     
 
 </div>
 
 <style>
+
+    .container{
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+    }
+
     .user_view{
         height: 17rem;
         width: 30rem;
-        background: linear-gradient(to left, #dfdbe4, #252526); /* Gradient background */
+        background: linear-gradient(to left, #515052, #10104d); /* Gradient background */
         border-radius: 0.9rem;
         margin-top: 3rem;
         padding-left: 1rem;
@@ -45,6 +137,89 @@
         color: #fff;
         margin-left: 1rem;
 
+    }
+
+    .card_number{
+        color: #fff;
+        margin-left: 1.5rem;
+        position: absolute;
+        letter-spacing: 0.8rem;
+        
+    }
+
+    .balance{
+        position: absolute;
+        float: right;
+        margin-left: 20rem;
+        margin-top: -1rem;
+        color: rgb(10, 238, 10);
+    }
+
+    .functions{
+        height: 7rem;
+        width: 40rem;
+        background: whitesmoke;
+        border-radius: 0.9rem;
+        margin-top: 3rem;
+        padding-left: 1rem;
+        padding-top: 3rem;
+    }
+
+    .functions2{
+        height: 13.5rem;
+        width: 40rem;
+        background: whitesmoke;
+        border-radius: 0.9rem;
+        margin-top: 3rem;
+        padding-left: 1rem;
+        padding-top: 3rem;
+    }
+
+    .wallet, .bank, .piggy{
+        height: 3rem;
+        width: 4rem;
+        /* background: rgb(167, 165, 165); */
+        border-radius: 0.3rem;
+        margin-top: -2rem;
+    }
+
+    .first{
+        display: grid;
+        gap: 50px 80px;
+        grid-template-columns: auto auto auto;
+        justify-content: space-evenly;
+    }
+
+    .second{
+        /* display: grid; */
+        /* grid-template-columns: 
+        justify-content: space-between; */
+        display: grid;
+        gap: 90px 100px;
+        grid-template-columns: auto auto auto;
+        justify-content: space-evenly;
+        
+    }
+
+    .first img{
+        width: 3rem;
+    }
+
+    .first img:hover{
+        cursor: pointer;
+        transform: translate(0px, -5px);
+        transition: transform 0.3s ease, scale 0.3s ease; 
+    }
+
+    .second img{
+        width: 3rem;
+    }
+    .airtime, .data, .tv, .electricity, .betting, .more{
+        height: 3rem;
+        width: 4rem;
+        /* background: rgb(167, 165, 165); */
+        border-radius: 0.3rem;
+        margin-top: -2rem;
     }
 
     @media screen and (max-width: 576px) {

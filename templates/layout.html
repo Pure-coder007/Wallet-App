@@ -85,7 +85,23 @@
 					{% endif %}
 				</ul>
 				{% if current_user.is_authenticated %}
-					<a class="btn btn-primary" href="{{ url_for('logout') }}" style="border: none; background-color: crimson;">Logout</a>
+				<ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+					{% if current_user.is_authenticated %}
+					
+					<li class="nav-item dropdown"> <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">{{ current_user.first_name  }} {{ current_user.last_name}}</a>
+						<ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+							<li><a class="dropdown-item " href="{{ url_for('profile') }}">My Profile</a></li>
+							<li><a class="dropdown-item " href="faq.html">My Account</a></li>
+							<!-- <li><a class="dropdown-item " href="faq.html"></a></li> -->
+							
+							</li>
+							<li style="list-style: none;"><a class=" dropdown-item" href="{{ url_for('logout') }}" style="border: none; ">Logout</a></li>
+						</ul>
+					</li>
+					{% else %}
+					
+					{% endif %}
+				</ul>
 				{% endif %}
 				<!-- <!account btn <a href="#!" class="btn btn-outline-primary">Log In</a> -->
         <!-- <a type="button" class="btn btn-primary" href="#" data-bs-toggle="modal" data-bs-target="#applyLoan">Log In</a> -->
