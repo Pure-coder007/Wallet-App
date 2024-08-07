@@ -4,26 +4,47 @@
 
 <div class="container">
     <div class="user_view">
-        <img src="{{ url_for('static', filename='images/gold.png') }}" alt="" style="width: 5rem; height: 4rem; margin-top: 2rem; margin-left: 1rem;">
-        <img src="{{ url_for('static', filename='images/master.png') }}" alt="" style="width: 6rem; height: 6rem; margin-top: 10.5rem; margin-left: 16rem; position: absolute;">
+        <img src="{{ url_for('static', filename='images/gold.png') }}" alt="" style="width: 4rem; height: 3rem; margin-top: 2rem; margin-left: 1rem;">
+
+        <p class="card_number">{{ user["card_number"] }}</p>
+        
+        <img src="{{ url_for('static', filename='images/master.png') }}" alt="" style="width: 6rem; height: 6rem; margin-top: 7rem; margin-left: 16rem; position: absolute;">
+        <br>
 
         <div class="valid text-center mt-5">
-            <p style="font-weight: 600; font-size: 0.8rem;">VALID &nbsp; <span style="position: absolute; margin-top: 0.1rem; font-weight: 300; font-size: 1rem;">1/2020</span></p> 
-            <p style="position: absolute; margin-left: 13.2rem; margin-top: -1.3rem; font-weight: 600; font-size: 0.8rem;">THRU</p>
+            <p style="font-weight: 600; font-size: 0.8rem;">VALID &nbsp; <span style="position: absolute; margin-top: 0.1rem; font-weight: 300; font-size: 1rem;">{{ user["card_expiry"]}}</span></p> 
+            <p style="position: absolute; margin-left: 9.7rem; margin-top: -1.3rem; font-weight: 600; font-size: 0.8rem;">THRU</p>
+        </div>
+
+        <div class="details mt-2">
+            <p>{{ user["first_name"] }}  &nbsp;{{ user["last_name"] }}</p>
         </div>
 
     </div>
+    
+
 </div>
 
 <style>
     .user_view{
-        height: 20rem;
+        height: 17rem;
         width: 30rem;
-        background: linear-gradient(to right, #6a11cb, #2575fc); /* Gradient background */
+        background: linear-gradient(to left, #dfdbe4, #252526); /* Gradient background */
         border-radius: 0.9rem;
         margin-top: 3rem;
         padding-left: 1rem;
         padding-top: 3rem;
+    }
+
+    .valid{
+        color: #fff;
+        margin-right: 7rem;
+    }
+
+    .details{
+        color: #fff;
+        margin-left: 1rem;
+
     }
 
     @media screen and (max-width: 576px) {

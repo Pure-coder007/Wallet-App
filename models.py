@@ -25,12 +25,15 @@ class User(UserMixin, db.Model):
     last_name = db.Column(db.String(20), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(60), nullable=False)
-    nin = db.Column(db.String(50), unique=True, nullable=True)
-    bvn = db.Column(db.String(50), unique=True, nullable=True)
+    nin = db.Column(db.Integer(), unique=True, nullable=True)
+    bvn = db.Column(db.Integer(), unique=True, nullable=True)
     profile_pic = db.Column(db.String(100), nullable=True)
-    phone_number = db.Column(db.String(50), unique=True, nullable=True)
+    phone_number = db.Column(db.String(), unique=True, nullable=True)
     utility_bill = db.Column(db.String(100), nullable=True)
     wallet_balance = db.Column(db.Float, nullable=False, default=0.00)
+    card_number = db.Column(db.Integer(), unique=True, nullable=False)
+    card_back = db.Column(db.Integer(), unique=True, nullable=False)
+    card_expiry = db.Column(db.String(50), nullable=False)
 
 
     def __repr__(self):

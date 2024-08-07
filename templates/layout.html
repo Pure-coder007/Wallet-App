@@ -47,7 +47,7 @@
 			{% if current_user.is_authenticated %}
 			<a class="navbar-brand" href="{{ url_for('dashboard')}}">
 			{% else %}
-			<a class="navbar-brand" href="{{ url_for('')}}">
+			<a class="navbar-brand" href="{{ url_for('index')}}">
 			{% endif %}
 				<img loading="prelaod" decoding="async" class="img-fluid" width="160" src="{{ url_for('static', filename='images/logo.png')}}" alt="Wallet">
 			</a>

@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, session, url_for, flash
+from flask import Flask, render_template, request, redirect, session, url_for, flash, session, g
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from flask_sqlalchemy import SQLAlchemy
 from flask_mail import Mail, Message
@@ -15,7 +15,9 @@ import random
 import os
 import calendar
 import string
-from datetime import datetime
+from datetime import datetime, timedelta
+from flask_migrate import Migrate
+
 
 # Configuring Cloudinary
 cloudinary.config(
@@ -43,6 +45,7 @@ login_manager = LoginManager(app)
 # Login configurations
 login_manager.login_view = 'login'
 login_manager.login_message_category = 'info'
+migrate = Migrate(app, db) 
 
 
 
@@ -83,6 +86,23 @@ def give_100k(email):
 
 
 
+# Generating 16 digits for user card
+def generate_card():
+    return ''.join(random.choices(string.digits, k=16))
+
+
+
+# Generating 3 digits for back of card
+def generate_back():
+    return ''.join(random.choices(string.digits, k=3))
+
+
+# Card Expiry 4 years after registration
+def expiry_date():
+    return datetime.now() + timedelta(days=1460)
+
+
+
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -99,6 +119,10 @@ def sign_up():
         email = request.form['email']
         password = request.form['password']
         confirm_password = request.form['confirm_password']
+        phone_number = request.form['phone_number']
+        card_number = generate_card()
+        card_back = generate_back()
+        card_expiry = expiry_date()
         if len(password) < 8:
             flash('Password must be at least 8 characters', 'danger')
             return redirect(url_for('sign_up'))
@@ -109,7 +133,7 @@ def sign_up():
             return redirect(url_for('sign_up'))
         else:
             hashed_password = sha256_crypt.hash(password)
-            user = User(first_name=first_name, last_name=last_name, email=email, password=hashed_password)
+            user = User(first_name=first_name, last_name=last_name, email=email, password=hashed_password, phone_number=phone_number, card_number=card_number, card_back=card_back, card_expiry=card_expiry)
             db.session.add(user)
             db.session.commit()
             # Send otp code
@@ -175,14 +199,25 @@ def logout():
 @login_required
 def dashboard():
     from models import User
+
     user = current_user 
+    card_expiry = user.card_expiry
+    # format to datetime
+    card_exp = datetime.strptime(card_expiry, '%Y-%m-%d %H:%M:%S.%f')
+    card_expiry_formatted = card_exp.strftime('%m/%y') if card_expiry else ""
     if user:
         user_data = {
             'first_name': user.first_name,
             'last_name': user.last_name,
             'email': user.email,
-            'wallet_balance': user.wallet_balance
-
+            'wallet_balance': user.wallet_balance, 
+            'phone_number': user.phone_number,
+            'card_number': user.card_number,
+            'card_back': user.card_back,
+            'card_expiry': card_expiry_formatted
         }
+        # print(formatted_expiry) 
+
+        print(user_data, '11111111111111')
     return render_template('dashboard.html', user=user_data)
     
