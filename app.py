@@ -238,17 +238,19 @@ def dashboard():
 @login_required
 def profile():
     if request.method == 'POST':
-        
         profile_pic = request.files['profile_pic']
         user = current_user
+        
         if profile_pic:
             filename = secure_filename(profile_pic.filename)
             response = cloudinary.uploader.upload(profile_pic, public_id=f"user/{filename}")
-            profile_pic = response['secure_url']
-        
-        
+            print(response, 'eeeeeeeeeeeeeeee')
+            user.profile_pic = response['secure_url']
+            print(user.profile_pic, 'yyyyyyyyyyyyyyyyyyyyy')
+        print(profile_pic, '22222222222222222222222222222222')
         db.session.commit()
         flash('Your profile has been updated', 'success')
         return redirect(url_for('profile'))
+    
     return render_template('profile.html')
 

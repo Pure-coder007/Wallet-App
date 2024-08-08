@@ -10,21 +10,21 @@
             <i id="toggle_balance" class="fas fa-eye" style="cursor: pointer;"></i>
         </p>
 
-        <img src="{{ url_for('static', filename='images/gold.png') }}" alt="" style="width: 4rem; height: 3rem; margin-top: 2rem; margin-left: 1rem;">
+        <img class="gold" src="{{ url_for('static', filename='images/gold.png') }}" alt="" style="width: 4rem; height: 3rem; margin-top: 2rem; margin-left: 1rem;">
 
         <p class="card_number text-center mt-2">{{ user["card_number_formatted"] }}</p>
         <br>
 
-        <img src="{{ url_for('static', filename='images/master.png') }}" alt="" style="width: 6rem; height: 6rem; margin-top: 3rem; margin-left: 21rem; position: absolute;">
+        <img  class="master" src="{{ url_for('static', filename='images/master.png') }}" alt="" style="width: 6rem; height: 6rem; margin-top: 3rem; margin-left: 21rem; position: absolute;">
         <br>
 
         <div class="valid text-center mt-5">
-            <p style="font-weight: 600; font-size: 0.8rem;">VALID &nbsp; <span style="position: absolute; margin-top: 0.1rem; font-weight: 300; font-size: 1rem;">{{ user["card_expiry_formatted"]}}</span></p> 
-            <p style="position: absolute; margin-left: 9.7rem; margin-top: -1.3rem; font-weight: 600; font-size: 0.8rem;">THRU</p>
+            <p class="text1" style="font-weight: 600; font-size: 0.8rem;">VALID &nbsp; <span class="span1" style="position: absolute; margin-top: 0.1rem; font-weight: 300; font-size: 1rem;">{{ user["card_expiry_formatted"]}}</span></p> 
+            <p class="text2" style="position: absolute; margin-left: 9.7rem; margin-top: -1.3rem; font-weight: 600; font-size: 0.8rem;">THRU</p>
         </div>
 
         <div class="details mt-2">
-            <p>{{ user["first_name"] }}  &nbsp;{{ user["last_name"] }}</p>
+            <p class="name">{{ user["first_name"] }}  &nbsp;{{ user["last_name"] }}</p>
         </div>
 
     </div>
@@ -195,7 +195,7 @@
         /* grid-template-columns: 
         justify-content: space-between; */
         display: grid;
-        gap: 90px 100px;
+        gap: 80px 80px;
         grid-template-columns: auto auto auto;
         justify-content: space-evenly;
         
@@ -227,6 +227,92 @@
             width: 100% !important;
             height: 13rem !important;
         }
+
+        .container{
+            display: block;
+        }
+
+        .card_number{
+            letter-spacing: 0.3rem;
+        }
+
+        .balance{
+            margin-left: 14rem;
+        }
+
+        .gold{
+            width: 3rem !important;
+            height: 2.5rem !important;
+            margin-top: 1rem !important;
+        }
+
+        .master{
+            width: 4rem !important;
+            height: 4rem !important;
+            margin-top: 2rem !important;
+            margin-left: 17rem !important;
+        }
+
+        
+
+        .valid .text1{
+            margin-left: 6.5rem;
+            font-size: 3rem;
+        }
+
+        .valid{
+            margin-right: 7rem;
+            margin-top: 1rem !important;
+        }
+
+        .text1{
+            font-size: 0.6rem !important;
+            margin-top: 2rem !important;
+        }
+
+        .span1{
+            font-size: 0.7rem !important;
+            margin-top: 0.3rem !important;
+        }
+
+        .text2{
+            font-size: 0.6rem !important;
+            margin-left: 10rem !important;
+        }
+
+        .details{
+            position: absolute;
+            margin-top: -0.7rem !important;
+        }
+        
+        .name{
+            font-size: 0.9rem !important;
+        }
+
+        .functions{
+            width: 100% !important;
+        }
+
+        .functions2{
+            width: 100% !important;
+        }
+
+        .first{
+            gap: 40px 70px;
+        }
+
+        .second{
+            gap: 80px 80px;
+        }
+
+        .more,  .tv{
+            /* margin-left: -2rem !important; */
+        }
+
+        
+
+
+
     }
 </style>
 

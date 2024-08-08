@@ -12,18 +12,19 @@
                     <div class="col-md-5 border-right">
                         <div class="p-3 py-5">
                             <img 
-                            {% if current_user.profile_picture %} 
-                            src="{{ current_user.profile_picture }}" 
-                            {% else %}
-                            src="{{ url_for('static', filename='images/default.jpeg') }}" 
-                            {% endif %} 
-                            alt="Profile Picture"
-                            class="rounded-circle article-img profile_pic m-auto border d-flex justify-content-center" 
-                            id="display_picture"
-                            style="width: 120px; height: 120px; border-radius: 50%; cursor: pointer;"
-                        >
-
-                        <input type="file" id="profilePicture" name="profile_pic" accept="image/*" class="d-none">
+            {% if current_user.profile_pic %} 
+            src="{{ current_user.profile_pic }}" 
+            {% else %}
+            src="{{ url_for('static', filename='images/default.jpeg') }}" 
+            {% endif %} 
+            alt="Profile Picture"
+            class="rounded-circle article-img profile_pic m-auto border d-flex justify-content-center" 
+            id="display_picture"
+            style="width: 120px; height: 120px; border-radius: 50%; cursor: pointer;"
+        >
+        <input type="file" id="profilePicture" name="profile_pic" accept="image/*" capture="camera" class="d-none">
+        
+            <!-- <div id="previewContainer"></div> -->
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <h4 class="text-right">User Profile</h4>
                             </div>
@@ -114,6 +115,24 @@
             profile_icon.src = URL.createObjectURL(selectedFile);
         }
     });
+</script>
+
+<script>
+    document.getElementById('profilePicture').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        const preview = document.createElement('img');
+        preview.src = URL.createObjectURL(file);
+        preview.style.width = '120px';
+        preview.style.height = '120px';
+        preview.style.borderRadius = '50%';
+        // Clear existing previews and add the new one
+        document.getElementById('previewContainer').innerHTML = '';
+        document.getElementById('previewContainer').appendChild(preview);
+    });
+    </script>
+
+<script>
+
 </script>
 
 {% endblock content %}

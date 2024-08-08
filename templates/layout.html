@@ -57,7 +57,7 @@
 				<ul class="navbar-nav mx-auto mb-2 mb-lg-0">
 					{% if current_user.is_authenticated %}
 					<li class="nav-item"> <a class="nav-link" href="{{ url_for('dashboard')}}"><i class="fa-solid fa-house"></i>  Home</a>
-						<li class="nav-item"> <a class="nav-link" href="{{ url_for('dashboard')}}">Send Money</a>
+						<li class="nav-item"> <a class="nav-link" href="{{ url_for('dashboard')}}" data-bs-toggle="modal" data-bs-target="#applyLoan">Send Money</a>
 							<li class="nav-item"> <a class="nav-link" href="{{ url_for('dashboard')}}">My Card</a>
 							<li class="nav-item"> <a class="nav-link" href="{{ url_for('dashboard')}}">Invest</a>
 					<li class="nav-item "> <a class="nav-link" href="contact.html">Contact</a></li>
@@ -98,6 +98,7 @@
 							<li style="list-style: none;"><a class=" dropdown-item" href="{{ url_for('logout') }}" style="border: none; ">Logout</a></li>
 						</ul>
 					</li>
+					<li style="list-style: none;"><a class=" dropdown-item" href="{{ url_for('profile') }}" ><img style="width: 2.5rem; height: 2.5rem; border-radius: 50%;" src="{{ current_user.profile_pic }}" alt=""></a></li>
 					{% else %}
 					
 					{% endif %}
@@ -110,6 +111,34 @@
 	</nav>
 </header>
 <!-- /navigation -->
+
+<div class="modal applyLoanModal fade" id="applyLoan" tabindex="-1" aria-labelledby="applyLoanLabel" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered">
+	  <div class="modal-content">
+		<div class="modal-header border-bottom-0">
+		  <h4 class="modal-title" id="exampleModalLabel">Where Do you Want To Send To?</h4>
+		  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+		</div>
+		<div class="modal-body">
+		  <form action="#!" method="post">
+			<div class="row">
+			  
+			  
+			  <div class="col-lg-12">
+				<button type="submit" class=" w-100 send"><a class="link" href="#">To Wallet</a></button>
+				<br><br>
+				<button type="submit" class=" w-100 send"><a class="link" href="#">To Bank</a></button>
+
+			  </div>
+			</div>
+		  </form>
+		</div>
+	  </div>
+	</div>
+  </div>
+  
+
+
 <br>
 
   {% with messages = get_flashed_messages(with_categories=true) %}
@@ -124,6 +153,33 @@
 
 
 {% block content %} {% endblock %}
+
+<style>
+	.send {
+		border: none;
+		border-radius: 0.5rem;
+		padding: 1rem;
+		background-color: purple;
+		color: white;
+		font-size: 1rem;
+		width: 10rem;
+	}
+
+	.send:hover{
+		background-color: black;
+		color: white;
+	}
+
+	.link{
+		color: white;
+		font-size: 1.3rem;
+		width: 10rem;
+	}
+
+	.link:hover{
+		color: white;
+	}
+</style>
 
 
 <!-- # JS Plugins -->
