@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, session, url_for, flash, session, g
+from flask import Flask, render_template, request, redirect, session, url_for, flash, session, g, jsonify
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from flask_sqlalchemy import SQLAlchemy
 from flask_mail import Mail, Message
@@ -17,6 +17,11 @@ import calendar
 import string
 from datetime import datetime, timedelta
 from flask_migrate import Migrate
+from flask_wtf.csrf import CSRFProtect
+
+
+
+
 
 
 # Configuring Cloudinary
@@ -28,6 +33,12 @@ cloudinary.config(
 
 # Initializing Flask application
 app = Flask(__name__)
+
+
+
+# Apply CSRF protection
+# csrf = CSRFProtect(app)
+
 
 # Configurations
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///wallet_app.db'
@@ -58,6 +69,14 @@ app.config['MAIL_USERNAME'] = 'kingsleydike318@gmail.com'
 app.config['MAIL_PASSWORD'] = 'ucgwnjifgohbnskl'
 MAIL_USE_TLS = False
 SECRET_KEY = 'language007'
+
+# register models
+from models import User, TransactionHistory
+
+
+@app.shell_context_processor
+def make_shell_context():
+    return {'db': db, 'User': User, 'TransactionHistory': TransactionHistory}
 
 
 # Flask Mail Configuration
@@ -109,10 +128,10 @@ def index():
 
 
 
+
 @app.route('/sign_up', methods=['GET', 'POST'])
 def sign_up():
-    from models import User 
-
+    from models import User
     if request.method == 'POST':
         first_name = request.form['first_name']
         last_name = request.form['last_name']
@@ -123,30 +142,45 @@ def sign_up():
         card_number = generate_card()
         card_back = generate_back()
         card_expiry = expiry_date()
+
+        # Basic validation
         if len(password) < 8:
             flash('Password must be at least 8 characters', 'danger')
             return redirect(url_for('sign_up'))
         if password != confirm_password:
             flash('Passwords do not match', 'danger')
-        if User.query.filter_by(email=email).first():
-            flash('Email already exists', 'danger')
             return redirect(url_for('sign_up'))
-        else:
+        if User.query.filter_by(email=email).first():
+            flash('Email already exists. Please log in.', 'danger')
+            return redirect(url_for('sign_up'))
+        
+        try:
+            # Hash password and save user
             hashed_password = sha256_crypt.hash(password)
-            user = User(first_name=first_name, last_name=last_name, email=email, password=hashed_password, phone_number=phone_number, card_number=card_number, card_back=card_back, card_expiry=card_expiry)
+            user = User(
+                first_name=first_name, last_name=last_name, 
+                email=email, password=hashed_password, 
+                phone_number=phone_number, 
+                card_number=card_number, card_back=card_back, 
+                card_expiry=card_expiry
+            )
             db.session.add(user)
             db.session.commit()
-            # Send otp code
+
+            # Generate and send OTP
             otp = str(random.randint(1000, 9999))
             session['otp'] = otp
             send_otp(email, otp)
-            print(email, otp)
             flash('Registration successful. Please check your email for verification token.', 'success')
-
             return redirect(url_for('token', email=email))
         
+        except Exception as e:
+            print(e, 'hgjertygrtgrtrsthsrhtrsthrhrhtrhtrhtrhrhtrhtrt')
+            db.session.rollback()  # Rollback the transaction in case of error
+            flash('An error occurred during registration. Please try again.', 'danger')
+            return redirect(url_for('sign_up'))
+        
     return render_template('sign_up.html')
-
 
 @app.template_filter('mask_email')
 def mask_email(email):
@@ -198,15 +232,37 @@ def logout():
 @app.route('/dashboard', methods=['GET', 'POST'])
 @login_required
 def dashboard():
-    from models import User
+    user = current_user
+    from models import TransactionHistory
 
-    user = current_user 
+
+    # Getting Transaction History
+    transactions = TransactionHistory.query.filter_by(user_id=user.id).order_by(TransactionHistory.date.desc()).all()
+    print(transactions)
+
+
+    print(request.method, 'REQUEST')
+
+    if request.method == 'POST':
+        transaction_pin = request.form.get('transaction_pin')
+        confirm_pin = request.form.get('confirm_pin')
+
+        if transaction_pin != confirm_pin:
+            flash('Transaction PINs do not match', 'warning')
+            return redirect(url_for('dashboard'))
+
+        # hash the transaction pin
+        user.transaction_pin = sha256_crypt.hash(transaction_pin)
+
+        db.session.commit()
+
+        flash('Transaction PIN set successfully!', 'success')
+        return render_template('dashboard.html', user=user)
+
     if user:
-        # Convert the card number to a string and format it with spaces
         card_number = str(user.card_number) if user.card_number else ""
         card_number_formatted = '     '.join(card_number[i:i+4] for i in range(0, len(card_number), 4)) if card_number else ""
 
-        # Format the card expiry to only show month and year
         card_expiry = user.card_expiry
         card_expiry_formatted = ""
         if card_expiry:
@@ -217,17 +273,14 @@ def dashboard():
             'first_name': user.first_name,
             'last_name': user.last_name,
             'email': user.email,
-            'wallet_balance': user.wallet_balance, 
+            'wallet_balance': user.wallet_balance,
             'phone_number': user.phone_number,
             'card_number_formatted': card_number_formatted,
             'card_back': user.card_back,
             'card_expiry_formatted': card_expiry_formatted
         }
 
-        print('i am here')
-        print(user_data, '11111111111111')
-    return render_template('dashboard.html', user=user_data)
-
+    return render_template('dashboard.html', user=user_data, transactions=transactions)
 
 
 
@@ -253,4 +306,106 @@ def profile():
         return redirect(url_for('profile'))
     
     return render_template('profile.html')
+
+
+
+# Send to wallet
+@app.route('/send_to_wallet', methods=['GET', 'POST'])
+def send_to_wallet():
+    user = current_user
+    
+    if request.method == 'POST':
+        phone_number = request.form.get('phone_number')
+        amount = request.form.get('amount')
+        message = request.form.get('message')
+
+        recipient = User.query.filter_by(phone_number=phone_number).first()
+        if not recipient:
+            flash('Account number not found', 'danger')
+            return redirect(url_for('send_to_wallet'))
+        if recipient.phone_number == user.phone_number:
+            flash('You cannot send money to yourself', 'danger')
+            return redirect(url_for('send_to_wallet'))
+        print(amount, 'QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ')
+        if user.wallet_balance < int(amount):
+            flash('Insufficient funds', 'danger')
+            return redirect(url_for('send_to_wallet'))
+
+        # Store relevant data in session for access in the next route
+        session['recipient_phone'] = phone_number
+        session['amount'] = amount
+        session['message'] = message
+
+        return redirect(url_for('final_wallet', acct_number=phone_number))
+    
+    return render_template('send_to_wallet.html')
+
+
+
+
+# Generate session_id of 15 digits
+def generate_session_id():
+    return ''.join(random.choices(string.digits, k=15))
+
+
+# Generate transaction_ref consisting of 10 digits including letters and /, for example: 123/SSD/DASDsd/33eedwaqwe/34ASDW
+def generate_transaction_ref():
+    return ''.join(random.choices(string.ascii_uppercase + string.digits + '/', k=10))
+
+
+
+@app.route('/final_wallet/<acct_number>', methods=['GET', 'POST'])
+def final_wallet(acct_number):
+    from models import User, TransactionHistory
+    
+    user = current_user
+    account_owner = User.query.filter_by(phone_number=acct_number).first()
+    
+    if not account_owner:
+        flash('Account number not found', 'danger')
+        return redirect(url_for('send_to_wallet'))
+    
+    # Retrieve and parse data from session
+    format_amount = session.get('amount', 0)  # Default to 0 if amount is not in session
+    amount_float = float(format_amount)  # Convert to float for calculations
+    formatted_amount = "{:,.0f}".format(amount_float)  # Format with commas for display
+    
+    message = session.get('message')
+
+    # Debug print to check values
+    print(f"Formatted Amount: {formatted_amount}, Message: {message}")
+
+    if request.method == 'POST':
+        transaction_pin = request.form['pin']
+        if sha256_crypt.verify(transaction_pin, user.transaction_pin):
+            user.wallet_balance -= amount_float  # Use the original float amount
+            account_owner.wallet_balance += amount_float
+            
+            transaction = TransactionHistory(
+                user_id=user.id,
+                receiver=account_owner.id,
+                amount=format_amount,
+                narration=message,
+                transaction_type='Wallet Transfer',
+                sender=user.phone_number,
+                session_id=generate_session_id(),
+                receiver_account=account_owner.phone_number,
+                transaction_ref=generate_transaction_ref()
+            )
+            db.session.add(transaction)
+            db.session.commit()
+
+            print(formatted_amount, 'fffffffffffffffffffffffffffff99999999999999')
+            session.pop('recipient_phone', None)
+            session.pop('amount', None)
+            session.pop('message', None)
+
+            flash('Transaction successful', 'success')
+            return redirect(url_for('dashboard'))
+        else:
+            flash('Incorrect transaction pin', 'danger')
+    
+    # Make sure the amount is being passed
+    print(formatted_amount, 'fffffffffffffffffffffffffffff11111111111111111')
+    return render_template('final_wallet.html', account_owner=account_owner, amount=formatted_amount, message=message)
 

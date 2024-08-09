@@ -1,0 +1,47 @@
+{% extends "layout.html" %}
+
+
+{% block content %}
+<div class="container mx-auto">
+    
+    <div class="transfer_form mx-auto">
+        <h2>Wallet To Wallet Transfer</h2>
+        <br>
+
+        <form action="{{ url_for('send_to_wallet') }}" method="POST">
+
+            <div class="form-group">
+                <label for="phone_number">Account Number</label>
+                <input type="text" class="form-control  shadow-none" id="phone_number" name="phone_number" required>
+            </div>
+            <br>
+            
+            
+            <div class="form-group">
+                <label for="amount">Amount</label>
+                <input type="number" class="form-control shadow-none" id="amount" name="amount"  required >
+            </div>
+            
+            <br>
+            <div class="form-group">
+                <label for="message">Message</label>
+                <textarea class="form-control" id="message" name="message"></textarea>
+            </div>
+            <br>
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary shadow-none">Proceed</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    .transfer_form {
+        width: 50%;
+    }
+
+    .container{
+        justify-content: center;
+    }
+</style>
+{% endblock content %}

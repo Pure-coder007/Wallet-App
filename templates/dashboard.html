@@ -3,6 +3,7 @@
 {% block content %}
 
 <div class="container">
+    <div class="container_grid">
     <div class="user_view">
 
         <p class="balance "> 
@@ -29,6 +30,35 @@
 
     </div>
 
+    
+    {% if not current_user.transaction_pin %}
+    <!-- Transaction PIN Modal -->
+    <div id="pinModal" class="modal" tabindex="-1" role="dialog" style="display:block; background-color: rgba(0, 0, 0, 0.749);">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Set Transaction PIN</h5>
+                </div>
+                <div class="modal-body">
+                    <form method="POST" action="{{ url_for('dashboard') }}">
+                        <div class="form-group">
+                            <label for="transactionPin">Transaction PIN</label>
+                            <input type="password" class="form-control shadow-none" id="transactionPin" name="transaction_pin" required>
+                            <br>
+                        </div>
+                        <div class="form-group">
+                            <label for="confirmTransactionPin">Confirm PIN</label>
+                            <input type="password" class="form-control shadow-none" id="confirmTransactionPin" name="confirm_pin" required>
+                        </div>
+                        <br>
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
     <div class="all_functions">
 
         
@@ -36,7 +66,7 @@
             
             <div class="first">
                 <div class="wallet">
-                    <a href="#">
+                    <a href="{{ url_for('send_to_wallet')}}">
                 <img src="{{ url_for('static', filename='images/wallet.svg') }}" alt=""> 
             </a>
             <p>To wallet</p>
@@ -106,16 +136,87 @@
             </div>
         </div>
         
+
+        
     </div>
+</div>
+
+    <!-- Transaction history table -->
+    
+    <div class="container w-100 mx-auto mt-5">
+        <div class="row">
+            <div class="col-12 mb-3 mb-lg-5">
+                <div class="position-relative card table-nowrap table-card">
+                    <div class="card-header align-items-center">
+                        <h5 class="mb-0">Latest Transactions</h5>
+                        <p class="mb-0 small text-muted">1 Pending</p>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table mb-0">
+                            <thead class="small text-uppercase bg-body text-muted">
+                                <tr>
+                                    <th>Transaction Type</th>
+                                    <th>Date</th>
+                                    <th>Category</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for transactions in transactions %}
+                                    <tr>
+                                        <td>
+                                            {{ transactions.transaction_type }}
+                                        </td>
+                                        <td>{{ transactions.date }}</td>
+                                        <td>{{ transactions.category }}</td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                {% if transactions.sender != current_user.phone_number  %}
+                                                    <span class="badge fs-6 fw-normal bg-tint-danger text-success">Credit - </span>
+                                                {% else %}
+                                                    <span class="badge fs-6 fw-normal bg-tint-success text-danger">Debit - </span>
+                                                {% endif %}
+                                                <span>₦{{ transactions.amount }}</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span class="badge fs-6 fw-normal bg-tint-success text-success">Success</span>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="card-footer text-end">
+                        <a href="#!" class="btn btn-gray">View All Transactions</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    
     
 
 </div>
 
+
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+
+
 <style>
 
-    .container{
+    .modal-backdrop.show {
+            opacity: 0.8;
+            background-color: black;
+        }
+
+
+    .container_grid{
         display: grid;
         grid-template-columns: 1fr 1fr;
+        /* justify-content: space-evenly; */
     }
 
     .user_view{
@@ -125,6 +226,7 @@
         border-radius: 0.9rem;
         margin-top: 3rem;
         padding-left: 1rem;
+        /* padding-right: 3rem; */
         padding-top: 3rem;
     }
 
@@ -152,7 +254,9 @@
         float: right;
         margin-left: 20rem;
         margin-top: -1rem;
-        color: rgb(10, 238, 10);
+        color: white;
+        font-weight: 800;
+        font-size: 1rem;
     }
 
     .functions{
@@ -223,6 +327,11 @@
     }
 
     @media screen and (max-width: 576px) {
+
+        .container_grid{
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+    }
         .user_view{
             width: 100% !important;
             height: 13rem !important;
@@ -309,11 +418,43 @@
             /* margin-left: -2rem !important; */
         }
 
-        
-
-
-
     }
+
+
+
+
+.card {
+    box-shadow: 0 20px 27px 0 rgb(0 0 0 / 5%);
+}
+
+.avatar.sm {
+    width: 2.25rem;
+    height: 2.25rem;
+    font-size: .818125rem;
+}
+
+.table-nowrap .table td,
+.table-nowrap .table th {
+    white-space: nowrap;
+}
+
+.table>:not(caption)>*>* {
+    padding: 0.75rem 1.25rem;
+    border-bottom-width: 1px;
+}
+
+table th {
+    font-weight: 600;
+    background-color: #eeecfd !important;
+}
+
+.fa-arrow-up {
+    color: #00CED1;
+}
+
+.fa-arrow-down {
+    color: #FF00FF;
+}
 </style>
 
 <script>
@@ -335,6 +476,45 @@
                 toggleBalance.classList.add('fa-eye');
             }
             balanceVisible = !balanceVisible;
+        });
+    });
+</script>
+
+<script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+<script>
+    $(document).ready(function() {
+        $('#pinForm').on('submit', function(e) {
+            e.preventDefault(); // Prevent the form from submitting the traditional way
+
+            var transactionPin = $('#transactionPin').val();
+            var confirmPin = $('#confirmTransactionPin').val();
+
+            if (transactionPin === confirmPin) {
+                $.ajax({
+                    type: 'POST',
+                    url: '{{ url_for("dashboard") }}',
+                    data: {
+                        transaction_pin: transactionPin,
+                        confirm_pin: confirmPin
+                    },
+                    success: function(response) {
+                        // Hide the modal if the PINs match and the server responds successfully
+                        $('#pinModal').modal('hide');
+                    },
+                    error: function() {
+                        alert('There was an error setting the PIN.');
+                    }
+                });
+            } else {
+                alert('Transaction PINs do not match!');
+            }
+        });
+
+        // Automatically show the modal when the page loads
+        $('#pinModal').modal({
+            backdrop: 'static',  // Disallow closing the modal by clicking outside of it
+            keyboard: false      // Disallow closing the modal with the keyboard
         });
     });
 </script>
