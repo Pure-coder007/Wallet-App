@@ -58,6 +58,25 @@ class TransactionHistory(db.Model):
     phone_number = db.Column(db.String(20), unique=True)
     narration = db.Column(db.String(2000))
 
+
+
+class Receipts(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    sender = db.Column(db.String(120))
+    amount = db.Column(db.Float)
+    receiver = db.Column(db.String(120))
+    transaction_type = db.Column(db.String(20))
+    sender_account = db.Column(db.String(20))
+    receiver_account = db.Column(db.String(20))
+    bank_name = db.Column(db.String(20))
+    date = db.Column(db.DateTime, default=datetime.utcnow)
+    transaction_ref = db.Column(db.String(20))
+    electricity_token = db.Column(db.String(2000))
+    session_id = db.Column(db.String(2000))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    phone_number = db.Column(db.String(20), unique=True)
+    narration = db.Column(db.String(2000))
+
     def __repr__(self):
         return f"TransactionHistory(' '{self.amount}', '{self.transaction_type}', '{self.date}')"
 

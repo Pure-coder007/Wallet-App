@@ -226,6 +226,8 @@
                                     <th>Transaction Type</th>
                                     <th>Date</th>
                                     <th>Category</th>
+                                    <th>Session ID</th>
+                                    <th>Reference ID</th>
                                     <th>Amount</th>
                                     <th>Status</th>
                                 </tr>
@@ -237,17 +239,17 @@
                                             {{ transactions.transaction_type }}
                                         </td>
                                         <td>{{ transactions.date }}</td>
-                                        <td>{{ transactions.category }}</td>
+                                        <td>{{ transactions.bank_name }}</td>
+                                        <td>{{ transactions.transaction_ref }}</td>
+                                        <td>{{ transactions.session_id }}</td>
                                         <td class="amount">
                                             <div class="d-flex align-items-center " style="">
                                                 {% if transactions.transaction_type == 'Debit' and transactions.sender_account == current_user.phone_number %}
                                                     <!-- Debit Transaction -->
-                                                    <span class="badge fs-6 fw-normal bg-tint-danger text-danger">Debit - </span>
-                                                    <span>₦{{ "{:,.2f}".format(transactions.amount) }}</span>
+                                                    <span class="badge fs-6 fw-normal bg-tint-danger text-danger">- ₦{{ "{:,.2f}".format(transactions.amount) }}</span>
                                                 {% elif transactions.transaction_type == 'Credit' and transactions.receiver_account == current_user.phone_number %}
                                                     <!-- Credit Transaction -->
-                                                    <span class="badge fs-6 fw-normal bg-tint-success text-success">Wallet Top-up </span>
-                                                    <span>₦{{ "{:,.2f}".format(transactions.amount) }}</span>
+                                                    <span class="badge fs-6 fw-normal bg-tint-success text-success">+ ₦{{ "{:,.2f}".format(transactions.amount) }}</span>
                                                 {% endif %}
                                             </div>
                                             

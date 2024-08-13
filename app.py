@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, session, url_for, flash, session, g, jsonify
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from flask_sqlalchemy import SQLAlchemy
+from sqlite3 import IntegrityError
 from flask_mail import Mail, Message
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed, FileRequired
@@ -229,29 +230,6 @@ def logout():
 
 
 
-# Getting recent debit transactions def get_recent_transactions(user_id):
-
-# from datetime import datetime
-# from models import TransactionHistory
-
-# def get_recent_transactions(user_id):
-#     try:
-#         # Retrieve the most recent 5 transactions for the given user
-#         transactions = TransactionHistory.query.filter_by(user_id=user_id).order_by(TransactionHistory.date.desc()).limit(5).all()
-
-#         # Format the date for each transaction
-#         # for transaction in transactions:
-#         #     transaction.formatted_date = transaction.date.strftime('%b %d %Y')
-
-#         # Debugging: Print the transactions to the console (optional)
-#         print(transactions, 'RECENT TRANSACTIONS************')
-
-#         return transactions
-    
-#     except Exception as e:
-#         # Handle exceptions and print the error (you can log this instead)
-#         print(f"An error occurred: {e}")
-#         return []
 
 
 
@@ -394,14 +372,24 @@ def generate_session_id():
 
 
 # Generate transaction_ref consisting of 10 digits including letters and /, for example: 123/SSD/DASDsd/33eedwaqwe/34ASDW
+import uuid
+
 def generate_transaction_ref():
-    return ''.join(random.choices(string.ascii_uppercase + string.digits + '/', k=10))
+    while True:
+        # Generate a UUID-based reference string
+        transaction_ref = str(uuid.uuid4()).replace('-', '')[:18]  # or adjust length as needed
 
+        # Check if the generated reference already exists
+        existing_transaction = TransactionHistory.query.filter_by(transaction_ref=transaction_ref).first()
+        if not existing_transaction:
+            return transaction_ref
 
-
+        # Optionally, add a counter or timestamp to ensure uniqueness if collisions happen frequently
 @app.route('/final_wallet/<acct_number>', methods=['GET', 'POST'])
 def final_wallet(acct_number):
-    from models import User, TransactionHistory
+    from models import User, TransactionHistory, Receipts
+    from sqlite3 import IntegrityError
+
     
     user = current_user
     account_owner = User.query.filter_by(phone_number=acct_number).first()
@@ -416,7 +404,6 @@ def final_wallet(acct_number):
     formatted_amount = "{:,.0f}".format(amount_float)
     
     message = session.get('message')
-    print(f"Formatted Amount: {formatted_amount}, Message: {message}")
 
     if request.method == 'POST':
         transaction_pin = request.form['pin']
@@ -426,56 +413,99 @@ def final_wallet(acct_number):
             
             session_id = generate_session_id()
 
-            # Generate a unique transaction reference
-            def get_unique_transaction_ref():
-                while True:
-                    ref = generate_transaction_ref()
-                    existing_transaction = TransactionHistory.query.filter_by(transaction_ref=ref).first()
-                    if not existing_transaction:
-                        return ref
+            while True:
+                transaction_ref = generate_transaction_ref()
+                print(transaction_ref, "pppppppppppaaaaaaaaaaa")
 
-            # Record debit transaction for the sender
-            debit_transaction = TransactionHistory(
-                user_id=user.id,
-                sender=user.first_name + ' ' + user.last_name,
-                receiver=account_owner.first_name + ' ' + account_owner.last_name,
-                amount=amount_float,
-                narration=message,
-                transaction_type='Debit',
-                sender_account=user.phone_number,
-                receiver_account=account_owner.phone_number,
-                transaction_ref=get_unique_transaction_ref(),
-                session_id=session_id
-            )
+                # Record debit transaction for the sender
+                debit_transaction = TransactionHistory(
+                    user_id=user.id,
+                    sender=user.first_name + ' ' + user.last_name,
+                    receiver=account_owner.first_name + ' ' + account_owner.last_name,
+                    amount=amount_float,
+                    narration=message,
+                    transaction_type='Debit',
+                    sender_account=user.phone_number,
+                    receiver_account=account_owner.phone_number,
+                    bank_name='Wallet Transfer',
+                    date=datetime.utcnow(),
+                    transaction_ref=transaction_ref,
+                    session_id=session_id
 
-            # Record credit transaction for the receiver
-            credit_transaction = TransactionHistory(
-                user_id=account_owner.id,
-                sender=user.first_name + ' ' + user.last_name,
-                receiver=account_owner.first_name + ' ' + account_owner.last_name,
-                amount=amount_float,
-                narration=message,
-                transaction_type='Credit',
-                sender_account=user.phone_number,
-                receiver_account=account_owner.phone_number,
-                transaction_ref=get_unique_transaction_ref(),
-                session_id=session_id
-            )
 
-            db.session.add(debit_transaction)
-            db.session.add(credit_transaction)
-            db.session.commit()
+                )
 
-            session.pop('recipient_phone', None)
-            session.pop('amount', None)
-            session.pop('message', None)
+                # Record credit transaction for the receiver
+                credit_transaction = TransactionHistory(
+                    user_id=account_owner.id,
+                    sender=user.first_name + ' ' + user.last_name,
+                    receiver=account_owner.first_name + ' ' + account_owner.last_name,
+                    amount=amount_float,
+                    narration=message,
+                    transaction_type='Credit',
+                    sender_account=user.phone_number,
+                    receiver_account=account_owner.phone_number,
+                    bank_name='Wallet Transfer',
+                    date=datetime.utcnow(),
+                    transaction_ref=transaction_ref,
+                    session_id=session_id
+                )
 
-            flash('Transaction successful', 'success')
-            return redirect(url_for('receipt'))
+                # Creating receipts for both sender and receiver
+                receipt_transaction_sender = Receipts(
+                    sender=user.first_name + ' ' + user.last_name,
+                    amount=amount_float,
+                    receiver=account_owner.first_name + ' ' + account_owner.last_name,
+                    transaction_type='Debit',
+                    sender_account=user.phone_number,
+                    receiver_account=account_owner.phone_number,
+                    bank_name='Wallet Transfer',
+                    date=datetime.utcnow(),
+                    transaction_ref=transaction_ref,
+                    session_id=session_id
+                )
+
+                receipt_transaction_receiver = Receipts(
+                    sender=user.first_name + ' ' + user.last_name,
+                    amount=amount_float,
+                    receiver=account_owner.first_name + ' ' + account_owner.last_name,
+                    transaction_type='Credit',
+                    sender_account=user.phone_number,
+                    receiver_account=account_owner.phone_number,
+                    bank_name='Wallet Transfer',
+                    date=datetime.utcnow(),
+                    transaction_ref=transaction_ref,
+                    session_id=session_id
+                )
+
+                try:
+                    db.session.add(debit_transaction)
+                    db.session.add(credit_transaction)
+                    db.session.add(receipt_transaction_sender)
+                    db.session.add(receipt_transaction_receiver)
+                    db.session.commit()
+
+                    session.pop('recipient_phone', None)
+                    session.pop('amount', None)
+                    session.pop('message', None)
+
+                    flash('Transaction successful', 'success')
+                    return render_template('receipt.html', amount=amount_float,  sender=user.first_name + ' ' + user.last_name, receiver=account_owner.first_name + ' ' + account_owner.last_name, transaction_ref=transaction_ref, session_id=session_id, bank_name='Wallet Transfer', date=datetime.utcnow(), sender_account=user.phone_number, receiver_account=account_owner.phone_number)
+                except IntegrityError as e:
+                    if 'UNIQUE constraint failed' in str(e):
+                        db.session.rollback()
+                        # Regenerate transaction_ref and try again
+                        continue
+                    else:
+                        raise e
+                except Exception as e:
+                    db.session.rollback()
+                    flash('Transaction failed due to an error: ' + str(e), 'danger')
+                    break
+
         else:
             flash('Incorrect transaction pin', 'danger')
     
-    print(formatted_amount, 'fffffffffffffffffffffffffffff11111111111111111')
     return render_template('final_wallet.html', account_owner=account_owner, amount=formatted_amount, message=message)
 
 
@@ -483,25 +513,15 @@ def final_wallet(acct_number):
 # Transaction receipt
 
 @app.route('/receipt', methods=['GET', 'POST'])
+@login_required
 def receipt():
-    from models import TransactionHistory
+    from models import Receipts
     user = current_user
-    # Getting details for receipt
-    transaction = TransactionHistory.query.filter_by(user_id=user.id).order_by(TransactionHistory.date.desc()).first()
 
-    if not transaction:
-        flash('No transaction found', 'danger')
-        return redirect(url_for('dashboard'))
-    transaction_amount = transaction.amount
-    formatted_amount = "{:,.0f}".format(transaction_amount)
-    transaction_date = transaction.date.strftime('%b %d %Y')
-    receiver_name = transaction.receiver
-    sender_name = transaction.sender
-    receiver_bank = transaction.receiver_account
-    sender_bank = transaction.sender_account
-    message = transaction.narration
-    session_id = transaction.session_id
-    reference = transaction.transaction_ref
+    if user:
+        receipts = Receipts.query.filter_by(user_id=user.id).order_by(Receipts.date.desc()).first()
+        
 
-    
+        print(receipts, "AAAAAAAAAAAAAAAAAAA")
     return render_template('receipt.html')
+
