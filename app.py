@@ -402,6 +402,7 @@ def final_wallet(acct_number):
     format_amount = session.get('amount', 0)
     amount_float = float(format_amount)
     formatted_amount = "{:,.0f}".format(amount_float)
+    formatted_amount_receipt = "{:,.0f}".format(amount_float)
     
     message = session.get('message')
 
@@ -489,8 +490,12 @@ def final_wallet(acct_number):
                     session.pop('amount', None)
                     session.pop('message', None)
 
+                    # Format date for display
+                    formatted_date = datetime.utcnow().strftime('%b %d, %Y %I:%M %p')
+                    formatted_date = formatted_date.replace(' 1,', ' 1st,').replace(' 2,', ' 2nd,').replace(' 3,', ' 3rd,').replace(' 21,', ' 21st,').replace(' 22,', ' 22nd,').replace(' 23,', ' 23rd,').replace(' 31,', ' 31st,')
+
                     flash('Transaction successful', 'success')
-                    return render_template('receipt.html', amount=amount_float,  sender=user.first_name + ' ' + user.last_name, receiver=account_owner.first_name + ' ' + account_owner.last_name, transaction_ref=transaction_ref, session_id=session_id, bank_name='Wallet Transfer', date=datetime.utcnow(), sender_account=user.phone_number, receiver_account=account_owner.phone_number)
+                    return render_template('receipt.html', amount=formatted_amount_receipt,  sender=user.first_name + ' ' + user.last_name, receiver=account_owner.first_name + ' ' + account_owner.last_name, transaction_ref=transaction_ref, session_id=session_id, bank_name='Wallet Transfer', date=formatted_date, sender_account=user.phone_number, receiver_account=account_owner.phone_number)
                 except IntegrityError as e:
                     if 'UNIQUE constraint failed' in str(e):
                         db.session.rollback()

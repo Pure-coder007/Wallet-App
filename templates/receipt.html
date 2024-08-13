@@ -2,24 +2,82 @@
 
 
 {% block content %}
-    <div class="container">
-        <div class="content border">
-            <h1 class="text-center">Receipt</h1>
-            <h3 class="text-center">{{ amount }}</h3>
-            <h1 class="text-center">SUCCESS <i class="fas fa-check-circle text-success"></i></h1>
-            <p>{{ transaction_type }}</p>
-            <p>{{ sender }}</p>
-            <p>{{ receiver }}</p>
-            <p>{{ transaction_ref }}</p>
-            <p>{{ session_id }}</p>
-            <p>{{ bank_name }}</p>
-            <p>{{ date }}</p>
-            <p>{{ sender_account }}</p>
-            <p>{{ receiver_account }}</p>
-
+<div class="container w-100 mt-4  mb-5">
+    <h1 class="text-center text-success ">₦{{ amount }}</h1>
+    <h1 class="text-center">SUCCESS <i class="fas fa-check-circle text-success"></i></h1>
+    <p class="text-center date">{{ date }}</p>
+        <hr class="w-50 mx-auto">
+        <div class="content w-50 mx-auto ">
+            <div class="type mx-auto">
+                <p>Transaction Type</p>
+                <p style="font-weight: 900;">{{ bank_name }}</p>
+            </div>
             
+
+            <div class="receiver  mx-auto" >
+                <p>Recipient Details</p>
+                
+                    <div>
+                        <p style="font-weight: 900;"> {{ receiver }}</p>
+                        <p style="font-size: 1rem;">{{ bank_name }} | {{ receiver_account }}</p>
+                    </div>
+                
+            </div>
+            
+
+            <div class="sender">
+                <p>Sender Details</p>
+                <div>
+                    <p style="font-weight: 900;">{{ sender }}</p>
+                    <p>{{ bank_name }} | {{ sender_account }}</p>
+                </div>
+            </div>
+            
+
+            <div class="remark">
+                <p>Remark</p>
+                <p>{{ message }}</p>
+            </div>
+            
+            <div class="ref">
+                <p>Transaction Reference</p>
+                <p>{{ transaction_ref }}</p>
+            </div>
+
+            <div class="session">
+                <p>Session ID</p>
+                <p>{{ session_id }}</p>
+            </div>
+
 
 
         </div>
     </div>
+
+
+    <style>
+        .type, .remark, .ref, .session {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-gap: 3rem;
+        }
+
+        .receiver, .sender {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-gap: 3rem;
+            
+        }
+
+        p{
+            padding-left: 2rem;
+        }
+
+        .date {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        
+    </style>
 {% endblock %}
