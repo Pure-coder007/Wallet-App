@@ -51,7 +51,7 @@ class TransactionHistory(db.Model):
     receiver_account = db.Column(db.String(20))
     bank_name = db.Column(db.String(20))
     date = db.Column(db.DateTime, default=datetime.utcnow)
-    transaction_ref = db.Column(db.String(20), unique=True)
+    transaction_ref = db.Column(db.String(20))
     electricity_token = db.Column(db.String(2000))
     session_id = db.Column(db.String(2000))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))

@@ -229,6 +229,32 @@ def logout():
 
 
 
+# Getting recent debit transactions def get_recent_transactions(user_id):
+
+# from datetime import datetime
+# from models import TransactionHistory
+
+# def get_recent_transactions(user_id):
+#     try:
+#         # Retrieve the most recent 5 transactions for the given user
+#         transactions = TransactionHistory.query.filter_by(user_id=user_id).order_by(TransactionHistory.date.desc()).limit(5).all()
+
+#         # Format the date for each transaction
+#         # for transaction in transactions:
+#         #     transaction.formatted_date = transaction.date.strftime('%b %d %Y')
+
+#         # Debugging: Print the transactions to the console (optional)
+#         print(transactions, 'RECENT TRANSACTIONS************')
+
+#         return transactions
+    
+#     except Exception as e:
+#         # Handle exceptions and print the error (you can log this instead)
+#         print(f"An error occurred: {e}")
+#         return []
+
+
+
 @app.route('/dashboard', methods=['GET', 'POST'])
 @login_required
 def dashboard():
@@ -236,9 +262,20 @@ def dashboard():
     from models import TransactionHistory
 
 
-    # Getting Transaction History
-    transactions = TransactionHistory.query.filter_by(user_id=user.id).order_by(TransactionHistory.date.desc()).all()
-    print(transactions)
+    if user:
+        # Getting Transaction History and format the date to display it like 'Jan 1st 2023'
+        transactions = TransactionHistory.query.filter_by(user_id=user.id).order_by(TransactionHistory.date.desc()).all()
+        for transaction in transactions:
+            transaction.date = transaction.date.strftime('%b %d %Y')
+        print(transactions)
+
+    
+    # if user:
+    #     get_recent_transactions(user.id)
+
+
+    # # transactions = TransactionHistory.query.filter_by(user_id=user.id).order_by(TransactionHistory.date.desc()).all()
+
 
 
     print(request.method, 'REQUEST')
@@ -286,6 +323,10 @@ def dashboard():
 
 
 
+
+
+
+
 # Edit User Profile
 @app.route('/profile', methods=['GET', 'POST'])
 @login_required
@@ -306,6 +347,10 @@ def profile():
         return redirect(url_for('profile'))
     
     return render_template('profile.html')
+
+
+
+
 
 
 
@@ -366,46 +411,97 @@ def final_wallet(acct_number):
         return redirect(url_for('send_to_wallet'))
     
     # Retrieve and parse data from session
-    format_amount = session.get('amount', 0)  # Default to 0 if amount is not in session
-    amount_float = float(format_amount)  # Convert to float for calculations
-    formatted_amount = "{:,.0f}".format(amount_float)  # Format with commas for display
+    format_amount = session.get('amount', 0)
+    amount_float = float(format_amount)
+    formatted_amount = "{:,.0f}".format(amount_float)
     
     message = session.get('message')
-
-    # Debug print to check values
     print(f"Formatted Amount: {formatted_amount}, Message: {message}")
 
     if request.method == 'POST':
         transaction_pin = request.form['pin']
         if sha256_crypt.verify(transaction_pin, user.transaction_pin):
-            user.wallet_balance -= amount_float  # Use the original float amount
+            user.wallet_balance -= amount_float
             account_owner.wallet_balance += amount_float
             
-            transaction = TransactionHistory(
+            session_id = generate_session_id()
+
+            # Generate a unique transaction reference
+            def get_unique_transaction_ref():
+                while True:
+                    ref = generate_transaction_ref()
+                    existing_transaction = TransactionHistory.query.filter_by(transaction_ref=ref).first()
+                    if not existing_transaction:
+                        return ref
+
+            # Record debit transaction for the sender
+            debit_transaction = TransactionHistory(
                 user_id=user.id,
-                receiver=account_owner.id,
-                amount=format_amount,
+                sender=user.first_name + ' ' + user.last_name,
+                receiver=account_owner.first_name + ' ' + account_owner.last_name,
+                amount=amount_float,
                 narration=message,
-                transaction_type='Wallet Transfer',
-                sender=user.phone_number,
-                session_id=generate_session_id(),
+                transaction_type='Debit',
+                sender_account=user.phone_number,
                 receiver_account=account_owner.phone_number,
-                transaction_ref=generate_transaction_ref()
+                transaction_ref=get_unique_transaction_ref(),
+                session_id=session_id
             )
-            db.session.add(transaction)
+
+            # Record credit transaction for the receiver
+            credit_transaction = TransactionHistory(
+                user_id=account_owner.id,
+                sender=user.first_name + ' ' + user.last_name,
+                receiver=account_owner.first_name + ' ' + account_owner.last_name,
+                amount=amount_float,
+                narration=message,
+                transaction_type='Credit',
+                sender_account=user.phone_number,
+                receiver_account=account_owner.phone_number,
+                transaction_ref=get_unique_transaction_ref(),
+                session_id=session_id
+            )
+
+            db.session.add(debit_transaction)
+            db.session.add(credit_transaction)
             db.session.commit()
 
-            print(formatted_amount, 'fffffffffffffffffffffffffffff99999999999999')
             session.pop('recipient_phone', None)
             session.pop('amount', None)
             session.pop('message', None)
 
             flash('Transaction successful', 'success')
-            return redirect(url_for('dashboard'))
+            return redirect(url_for('receipt'))
         else:
             flash('Incorrect transaction pin', 'danger')
     
-    # Make sure the amount is being passed
     print(formatted_amount, 'fffffffffffffffffffffffffffff11111111111111111')
     return render_template('final_wallet.html', account_owner=account_owner, amount=formatted_amount, message=message)
 
+
+
+# Transaction receipt
+
+@app.route('/receipt', methods=['GET', 'POST'])
+def receipt():
+    from models import TransactionHistory
+    user = current_user
+    # Getting details for receipt
+    transaction = TransactionHistory.query.filter_by(user_id=user.id).order_by(TransactionHistory.date.desc()).first()
+
+    if not transaction:
+        flash('No transaction found', 'danger')
+        return redirect(url_for('dashboard'))
+    transaction_amount = transaction.amount
+    formatted_amount = "{:,.0f}".format(transaction_amount)
+    transaction_date = transaction.date.strftime('%b %d %Y')
+    receiver_name = transaction.receiver
+    sender_name = transaction.sender
+    receiver_bank = transaction.receiver_account
+    sender_bank = transaction.sender_account
+    message = transaction.narration
+    session_id = transaction.session_id
+    reference = transaction.transaction_ref
+
+    
+    return render_template('receipt.html')

@@ -1,0 +1,25 @@
+{% extends "layout.html" %}
+
+
+{% block content %}
+    <div class="container">
+        <div class="content border">
+            <h1 class="text-center">Receipt</h1>
+            <h3 class="text-center">{{ amount }}</h3>
+            <h1 class="text-center">SUCCESS <i class="fas fa-check-circle text-success"></i></h1>
+
+            {% if message %}
+        <p>{{ message }}</p>
+    {% else %}
+        <h2>Transaction Details</h2>
+        <p><strong>Recipient:</strong> {{ recipient_details.phone_number }}</p>
+        <p><strong>Sender:</strong> {{ sender_details.phone_number }}</p>
+        <p><strong>Remark:</strong> {{ remark }}</p>
+        <p><strong>Session ID:</strong> {{ session_id }}</p>
+        <p><strong>Amount:</strong> {{ formatted_amount }}</p>
+    {% endif %}
+
+
+        </div>
+    </div>
+{% endblock %}
