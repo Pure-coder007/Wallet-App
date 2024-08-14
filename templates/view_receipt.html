@@ -3,14 +3,14 @@
 
 {% block content %}
 <div class="container w-100 mt-4  mb-5">
-    <h1 class="text-center text-success ">₦{{ amount }}</h1>
+    <h1 class="text-center text-success ">₦{{ receipt.amount }}</h1>
     <h1 class="text-center">SUCCESS <i class="fas fa-check-circle text-success"></i></h1>
-    <p class="text-center date">{{ date }}</p>
+    <p class="text-center date">{{ receipt.date }}</p>
         <hr class="w-50 mx-auto">
         <div class="content w-50 mx-auto ">
             <div class="type mx-auto">
                 <p>Transaction Type</p>
-                <p style="font-weight: 900;">{{ bank_name }}</p>
+                <p style="font-weight: 900;">{{ receipt.bank_name }}</p>
             </div>
             
 
@@ -18,8 +18,8 @@
                 <p>Recipient Details</p>
                 
                     <div>
-                        <p style="font-weight: 900;"> {{ receiver }}</p>
-                        <p style="font-size: 1rem;">{{ bank_name }} | {{ receiver_account }}</p>
+                        <p style="font-weight: 900;"> {{ receipt.receiver }}</p>
+                        <p style="font-size: 1rem;">{{ receipt.bank_name }} | {{ receipt.receiver_account }}</p>
                     </div>
                 
             </div>
@@ -28,25 +28,25 @@
             <div class="sender">
                 <p>Sender Details</p>
                 <div>
-                    <p style="font-weight: 900; ">{{ sender }}</p>
-                    <p style="font-size: 1rem; ">{{ bank_name }} | {{ sender_account }}</p>
+                    <p style="font-weight: 900; ">{{ receipt.sender }}</p>
+                    <p style="font-size: 1rem; ">{{ receipt.bank_name }} | {{ receipt.sender_account }}</p>
                 </div>
             </div>
             
 
             <div class="remark">
                 <p>Remark</p>
-                <p style="font-size: 1rem;">{{ narration }}</p>
+                <p style="font-size: 1rem;">{{ receipt.narration }}</p>
             </div>
             
             <div class="ref">
                 <p>Transaction Reference</p>
-                <p style="font-size: 1rem; ">{{ transaction_ref }}</p>
+                <p style="font-size: 1rem; ">{{ receipt.transaction_ref }}</p>
             </div>
 
             <div class="session">
                 <p>Session ID</p>
-                <p style="font-size: 1rem; ">{{ session_id }}</p>
+                <p style="font-size: 1rem; ">{{ receipt.session_id }}</p>
             </div>
 
 
@@ -57,7 +57,7 @@
                 
                 <p style="font-size: 1rem;">
                     Enjoy a better life with wallet. Get free transfers, withdrawals, free bill payments. Instant loans and up to 15% interest. on savings.
-                    Opay is licenced by the Central Bank of Nigeria and insured by the NDIC.
+                    Wallet is licenced by the Central Bank of Nigeria and insured by the NDIC.
                 </p>
                 </div>
 

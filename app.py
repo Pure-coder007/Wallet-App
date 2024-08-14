@@ -368,7 +368,7 @@ def send_to_wallet():
 
 # Generate session_id of 15 digits
 def generate_session_id():
-    return ''.join(random.choices(string.digits, k=15))
+    return ''.join(random.choices(string.digits, k=28))
 
 
 # Generate transaction_ref consisting of 10 digits including letters and /, for example: 123/SSD/DASDsd/33eedwaqwe/34ASDW
@@ -377,7 +377,7 @@ import uuid
 def generate_transaction_ref():
     while True:
         # Generate a UUID-based reference string
-        transaction_ref = str(uuid.uuid4()).replace('-', '')[:18]  # or adjust length as needed
+        transaction_ref = str(uuid.uuid4()).replace('-', '')[:20]  # or adjust length as needed
 
         # Check if the generated reference already exists
         existing_transaction = TransactionHistory.query.filter_by(transaction_ref=transaction_ref).first()
@@ -463,7 +463,8 @@ def final_wallet(acct_number):
                     bank_name='Wallet Transfer',
                     date=datetime.utcnow(),
                     transaction_ref=transaction_ref,
-                    session_id=session_id
+                    session_id=session_id,
+                    narration=message
                 )
 
                 receipt_transaction_receiver = Receipts(
@@ -476,7 +477,8 @@ def final_wallet(acct_number):
                     bank_name='Wallet Transfer',
                     date=datetime.utcnow(),
                     transaction_ref=transaction_ref,
-                    session_id=session_id
+                    session_id=session_id,
+                    narration=message
                 )
 
                 try:
@@ -495,7 +497,7 @@ def final_wallet(acct_number):
                     formatted_date = formatted_date.replace(' 1,', ' 1st,').replace(' 2,', ' 2nd,').replace(' 3,', ' 3rd,').replace(' 21,', ' 21st,').replace(' 22,', ' 22nd,').replace(' 23,', ' 23rd,').replace(' 31,', ' 31st,')
 
                     flash('Transaction successful', 'success')
-                    return render_template('receipt.html', amount=formatted_amount_receipt,  sender=user.first_name + ' ' + user.last_name, receiver=account_owner.first_name + ' ' + account_owner.last_name, transaction_ref=transaction_ref, session_id=session_id, bank_name='Wallet Transfer', date=formatted_date, sender_account=user.phone_number, receiver_account=account_owner.phone_number)
+                    return render_template('receipt.html', amount=formatted_amount_receipt,  sender=user.first_name + ' ' + user.last_name, receiver=account_owner.first_name + ' ' + account_owner.last_name, transaction_ref=transaction_ref, session_id=session_id, bank_name='Wallet Transfer', date=formatted_date, sender_account=user.phone_number, receiver_account=account_owner.phone_number, narration=message)
                 except IntegrityError as e:
                     if 'UNIQUE constraint failed' in str(e):
                         db.session.rollback()
@@ -530,3 +532,15 @@ def receipt():
         print(receipts, "AAAAAAAAAAAAAAAAAAA")
     return render_template('receipt.html')
 
+
+
+
+# View single receipt from dashboard
+
+@app.route('/view_receipt/<int:receipt_id>', methods=['GET', 'POST'])
+@login_required
+def view_receipt(receipt_id):
+    from models import Receipts, TransactionHistory
+    receipt = TransactionHistory.query.get_or_404(receipt_id)
+    print(receipt, "VVVVVVVVVVVVVVVVVVVVVV")
+    return render_template('view_receipt.html', receipt=receipt)

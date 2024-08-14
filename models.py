@@ -76,6 +76,7 @@ class Receipts(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     phone_number = db.Column(db.String(20), unique=True)
     narration = db.Column(db.String(2000))
+    
 
     def __repr__(self):
         return f"TransactionHistory(' '{self.amount}', '{self.transaction_type}', '{self.date}')"

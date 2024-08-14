@@ -2,7 +2,7 @@
 
 {% block content %}
 
-<div class="container">
+<div class="container all">
     <div class="container_grid">
     <div class="user_view">
 
@@ -16,12 +16,12 @@
         <p class="card_number text-center mt-2">{{ user["card_number_formatted"] }}</p>
         <br>
 
-        <img  class="master" src="{{ url_for('static', filename='images/master.png') }}" alt="" style="width: 6rem; height: 6rem; margin-top: 3rem; margin-left: 21rem; position: absolute;">
+        <img  class="master" src="{{ url_for('static', filename='images/master.png') }}" alt="" >
         <br>
 
         <div class="valid text-center mt-5">
             <p class="text1" style="font-weight: 600; font-size: 0.8rem;">VALID &nbsp; <span class="span1" style="position: absolute; margin-top: 0.1rem; font-weight: 300; font-size: 1rem;">{{ user["card_expiry_formatted"]}}</span></p> 
-            <p class="text2" style="position: absolute; margin-left: 9.7rem; margin-top: -1.3rem; font-weight: 600; font-size: 0.8rem;">THRU</p>
+            <p class="text2" >THRU</p>
         </div>
 
         <div class="details mt-2">
@@ -93,7 +93,7 @@
             <div class="second ">
                 <div class="airtime ">
                     <a href="#">
-                        <img src="{{ url_for('static', filename='images/airtime.png') }}" alt=""> 
+                        <img src="{{ url_for('static', filename='images/airtime.svg') }}" alt=""> 
                     </a>
             <p>Airtime</p>
 
@@ -115,7 +115,7 @@
         
                 <div class="electricity ">
                     <a href="#">
-                        <img src="{{ url_for('static', filename='images/electric.svg') }}" alt=""> 
+                        <img src="{{ url_for('static', filename='images/electricity.svg') }}" alt=""> 
                     </a>
                     <p>Electricity</p>
                 </div>
@@ -209,74 +209,107 @@
 	</div>
   </div>
 
-    <!-- Transaction history table -->
-    
-    <div class="container w-100 mx-auto mt-5">
-        <div class="row">
-            <div class="col-12 mb-3 mb-lg-5">
-                <div class="position-relative card table-nowrap table-card">
-                    <div class="card-header align-items-center">
-                        <h5 class="mb-0">Latest Transactions</h5>
-                        <p class="mb-0 small text-muted">1 Pending</p>
-                    </div>
-                    <div class="table-responsive">
-                        <table class="table mb-0">
-                            <thead class="small text-uppercase bg-body text-muted">
-                                <tr>
-                                    <th>Transaction Type</th>
-                                    <th>Date</th>
-                                    <th>Category</th>
-                                    <th>Session ID</th>
-                                    <th>Reference ID</th>
-                                    <th>Amount</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for transactions in transactions %}
-                                    <tr>
-                                        <td>
-                                            {{ transactions.transaction_type }}
-                                        </td>
-                                        <td>{{ transactions.date }}</td>
-                                        <td>{{ transactions.bank_name }}</td>
-                                        <td>{{ transactions.transaction_ref }}</td>
-                                        <td>{{ transactions.session_id }}</td>
-                                        <td class="amount">
-                                            <div class="d-flex align-items-center " style="">
-                                                {% if transactions.transaction_type == 'Debit' and transactions.sender_account == current_user.phone_number %}
-                                                    <!-- Debit Transaction -->
-                                                    <span class="badge fs-6 fw-normal bg-tint-danger text-danger">- ₦{{ "{:,.2f}".format(transactions.amount) }}</span>
-                                                {% elif transactions.transaction_type == 'Credit' and transactions.receiver_account == current_user.phone_number %}
-                                                    <!-- Credit Transaction -->
-                                                    <span class="badge fs-6 fw-normal bg-tint-success text-success">+ ₦{{ "{:,.2f}".format(transactions.amount) }}</span>
-                                                {% endif %}
-                                            </div>
-                                            
-                                        </td>
-                                        <td>
-                                            <span class="badge fs-6 fw-normal bg-tint-success text-success">Success</span>
-                                        </td>
-                                    </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="card-footer text-end">
-                        <a href="#!" class="btn btn-gray">View All Transactions</a>
-                    </div>
+   <!-- Transaction history table -->
+<div class="container w-100 mx-auto mt-5">
+    <div class="row">
+        <div class="col-12 mb-3 mb-lg-5">
+            <div class="position-relative card table-nowrap table-card">
+                <div class="card-header align-items-center">
+                    <h5 class="mb-0">Latest Transactions</h5>
+                </div>
+                <div class="table-responsive">
+                    <table class="table mb-0">
+                        <thead class="small text-uppercase bg-body text-muted">
+                            <tr>
+                                <th>Type</th>
+                                <th>Date</th>
+                                <th>Category</th>
+                                <th>Session ID</th>
+                                <th>Reference ID</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for transaction in transactions %}
+                            <tr class="">
+                                <td>
+                                    <a href="{{ url_for('view_receipt', receipt_id=transaction.id)}}" class="text-decoration-none text-dark links">
+                                        {{ transaction.transaction_type }}
+                                    </a>
+                                </td>
+                                <td>
+                                    <a href="{{ url_for('view_receipt', receipt_id=transaction.id)}}" class="text-decoration-none text-dark">
+                                        {{ transaction.date }}
+                                    </a>
+                                </td>
+                                <td>
+                                    <a href="{{ url_for('view_receipt', receipt_id=transaction.id)}}" class="text-decoration-none text-dark">
+                                        {{ transaction.bank_name }}
+                                    </a>
+                                </td>
+                                <td>
+                                    <a href="{{ url_for('view_receipt', receipt_id=transaction.id)}}" class="text-decoration-none text-dark">
+                                        {{ transaction.transaction_ref }}
+                                    </a>
+                                </td>
+                                <td>
+                                    <a href="{{ url_for('view_receipt', receipt_id=transaction.id)}}" class="text-decoration-none text-dark">
+                                        {{ transaction.session_id }}
+                                    </a>
+                                </td>
+                                <td class="amount">
+                                    <div class="d-flex align-items-center">
+                                        {% if transaction.transaction_type == 'Debit' and transaction.sender_account == current_user.phone_number %}
+                                        <!-- Debit Transaction -->
+                                        <a href="{{ url_for('view_receipt', receipt_id=transaction.id)}}" class="text-decoration-none text-danger">
+                                            - ₦{{ "{:,.2f}".format(transaction.amount) }}
+                                        </a>
+                                        {% elif transaction.transaction_type == 'Credit' and transaction.receiver_account == current_user.phone_number %}
+                                        <!-- Credit Transaction -->
+                                        <a href="{{ url_for('view_receipt', receipt_id=transaction.id)}}" class="text-decoration-none text-success">
+                                            + ₦{{ "{:,.2f}".format(transaction.amount) }}
+                                        </a>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                                <td>
+                                    <a href="{{ url_for('view_receipt', receipt_id=transaction.id)}}" class="text-decoration-none text-success">
+                                        Success
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="card-footer text-end">
+                    <a href="#!" class="btn btn-gray">View All Transactions</a>
                 </div>
             </div>
         </div>
     </div>
-    
-    
+</div>
+
     
 
 </div>
 
 
 <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+
+
+<style>
+    /* Base styling for table rows */
+    .table tbody tr {
+        transition: background-color 0.3s ease;
+    }
+
+    /* Hover effect */
+    .table tbody tr:hover {
+        background-color: #f5f5f5; /* Light grey background on hover */
+    }
+</style>
 
 
 <style>
@@ -401,19 +434,67 @@
         margin-top: -2rem;
     }
 
+    .master{
+        position: relative;
+        width: 5rem;
+        height: 5rem;
+        margin-top: 4rem;
+        /* margin-left: 17rem; */
+        float: right;
+        margin-right: 1rem;
+    }
+
+    .text2{
+        margin-bottom: 1rem;
+        font-size: 0.8rem;
+        margin-top: -1.3rem;
+    }
+
+    .valid{
+        margin-top: 2.5rem !important;
+    }
+
     @media screen and (max-width: 576px) {
 
         .container_grid{
         display: grid;
         grid-template-columns: 1fr 1fr;
     }
+
+    .valid{
+        margin-top: 2rem !important;
+    }
+
+    .text1, .text2, .span1{
+        font-size: 0.8rem;
+    }
+
+    .text1{
+        margin-left: 5rem !important;
+    }
+
+    .text2{
+        margin-right: 5rem !important;
+        /* position: relative !important; */
+    }
+
         .user_view{
             width: 100% !important;
             height: 13rem !important;
+            border: 1px solid green;
+        }
+
+        .balance{
+            font-size: 0.8rem;
+        }
+
+        .details{
+            font-size: 0.8rem;
         }
 
         .container{
             display: block;
+            border: 1px solid red;
         }
 
         .card_number{
@@ -431,10 +512,12 @@
         }
 
         .master{
-            width: 4rem !important;
-            height: 4rem !important;
-            margin-top: 2rem !important;
-            margin-left: 17rem !important;
+            position: relative !important;
+            width: 3.5rem !important;
+            height: 3.5rem !important;
+            margin-top: 2.5rem !important;
+            /* margin-left: 17rem !important; */
+            
         }
 
         
@@ -489,10 +572,20 @@
             gap: 80px 80px;
         }
 
-        .more,  .tv{
-            /* margin-left: -2rem !important; */
-        }
+       .rows{
+        background-color: #10104d;
+       }
 
+       .all{
+        display: block;
+
+       }
+
+       .container_grid{
+        display: block;
+       }
+
+       
     }
 
 
@@ -529,6 +622,10 @@ table th {
 
 .fa-arrow-down {
     color: #FF00FF;
+}
+
+.links:hover{
+    background-color: rgb(176, 241, 241);
 }
 </style>
 
