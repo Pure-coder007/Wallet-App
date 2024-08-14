@@ -65,26 +65,26 @@
         <div class="functions">
             
             <div class="first">
-                <div class="wallet">
+                <div class="wallet wallet_img">
                     <a href="{{ url_for('send_to_wallet')}}" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                <img src="{{ url_for('static', filename='images/wallet.svg') }}" alt=""> 
+                <img class=""  src="{{ url_for('static', filename='images/wallet.svg') }}" alt=""> 
             </a>
-            <p>To wallet</p>
+            <p class="to_wallet">To wallet</p>
                 </div>
                 
-                <div class="bank">
+                <div class="bank bank_img">
                     <a href="#">
-                        <img src="{{ url_for('static', filename='images/bank.svg') }}" alt=""> 
+                        <img class="" src="{{ url_for('static', filename='images/bank.svg') }}" alt=""> 
                     </a>
-            <p>To Bank</p>
+            <p class="to_bank">To Bank</p>
 
                 </div>
                 
-                <div class="piggy">
+                <div class="piggy piggy_img">
                     <a href="#">
-                        <img src="{{ url_for('static', filename='images/piggy.svg') }}" alt=""> 
+                        <img class=""  src="{{ url_for('static', filename='images/piggy.svg') }}" alt=""> 
                     </a>
-            <p>To Piggy Wallet</p>
+            <p class="to_piggy"> To Piggy Wallet</p>
                 </div>
             </div>
         </div>
@@ -474,14 +474,15 @@
     }
 
     .text2{
-        margin-right: 5rem !important;
-        /* position: relative !important; */
+        position: absolute !important;
+        margin-left: -5rem !important;
+        font-size: 2rem !important;
     }
 
         .user_view{
             width: 100% !important;
             height: 13rem !important;
-            border: 1px solid green;
+            /* border: 1px solid green; */
         }
 
         .balance{
@@ -494,7 +495,7 @@
 
         .container{
             display: block;
-            border: 1px solid red;
+            /* border: 1px solid red; */
         }
 
         .card_number{
@@ -523,7 +524,7 @@
         
 
         .valid .text1{
-            margin-left: 6.5rem;
+            margin-left: 4.7rem !important;
             font-size: 3rem;
         }
 
@@ -544,7 +545,7 @@
 
         .text2{
             font-size: 0.6rem !important;
-            margin-left: 10rem !important;
+            margin-left: 8.1rem !important;
         }
 
         .details{
@@ -583,6 +584,21 @@
 
        .container_grid{
         display: block;
+       }
+
+       .wallet_img, .bank_img, .piggy_img {
+        height: 3rem !important;
+        width: 3rem !important;
+        font-size: 2rem !important;
+        /* margin-top: 2rem !important; */
+       }
+
+       .to_wallet, .to_bank, .to_piggy {
+        font-size: 0.8rem !important;
+        padding: 0;
+        /* border: 1px solid black; */
+        width: 5rem !important;
+        margin-right: 2rem !important;
        }
 
        
