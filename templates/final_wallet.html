@@ -4,56 +4,81 @@
 
 <div class="container">
     <br>
+
+    <div class="transfer_form mx-auto">
     
-    <form action="" method="POST" class="mx-auto ">
-        
-        <img 
-        {% if account_owner.profile_pic %} 
-            src="{{ account_owner.profile_pic }}" 
-            {% else %}
-            src="{{ url_for('static', filename='images/default.jpeg') }}" 
-            {% endif %} 
-            alt="Profile Picture"
-            class="rounded-circle article-img profile_pic m-auto border d-flex justify-content-center" 
-            id="display_picture"
-            style="width: 120px; height: 120px; border-radius: 50%; cursor: pointer;"
-            >
-            <br>
-            <div class="mx-auto  w-50">
-            <h2>Complete Your Transaction</h2>
-            <br>
-            <div class="form-group">
-                <label for="phone_number">Account Name</label>
-                <input type="text" class="form-control" id="phone_number" name="phone_number" value="{{ account_owner.first_name }} {{ account_owner.last_name }}" required disabled>
-            </div>
-            <br>
+        <form action="" method="POST" class="mx-auto ">
             
-            
-            <div class="form-group">
-                <label for="amount">Amount</label>
-                <input type="text" class="form-control" id="amount" name="amount" value="₦{{ amount }}" required disabled>
+            <img 
+            {% if account_owner.profile_pic %} 
+                src="{{ account_owner.profile_pic }}" 
+                {% else %}
+                src="{{ url_for('static', filename='images/default.jpeg') }}" 
+                {% endif %} 
+                alt="Profile Picture"
+                class="rounded-circle article-img profile_pic m-auto border d-flex justify-content-center" 
+                id="display_picture"
+                style="width: 120px; height: 120px; border-radius: 50%; cursor: pointer;"
+                >
+                <br>
+                <div class="mx-auto transfer_form w-50">
+                <h2>Complete Your Transaction</h2>
+                <br>
+                <div class="form-group">
+                    <label for="phone_number">Account Name</label>
+                    <input type="text" class="form-control space" id="phone_number" name="phone_number" value="{{ account_owner.first_name }} {{ account_owner.last_name }}" required disabled>
+                </div>
+                <br>
+                
+                
+                <div class="form-group">
+                    <label for="amount">Amount</label>
+                    <input type="text" class="form-control space" id="amount" name="amount" value="₦{{ amount }}" required disabled>
+                </div>
+                
+                <br>
+                <div class="form-group">
+                    <label for="message">Transaction Pin</label>
+                    <input type="password" class="form-control shadow-none space" id="message" name="pin" required placeholder="4 - digit transaction pin">
+                </div>
+                <br>
+                <div class="form-group">
+                    <button type="submit" class="submit btn-primary">Proceed</button>
+                </div>
             </div>
-            
-            <br>
-            <div class="form-group">
-                <label for="message">Transaction Pin</label>
-                <input type="password" class="form-control shadow-none" id="message" name="pin" required placeholder="4 - digit transaction pin">
-            </div>
-            <br>
-            <div class="form-group">
-                <button type="submit" class="btn btn-primary">Proceed</button>
-            </div>
-        </div>
 
         </form>
+    </div>
+
         <br><br>
 </div>
 
 <style>
-    /* input{
-        width: 25% !important;
-    } */
-    
+    @media screen and (max-width: 576px) {
+        .space{
+            width: 100% !important;
+            height: 2.3rem !important;
+            border-radius: 0.2rem !important;
+        }
+
+        .transfer_form{
+            margin-top: 1rem;
+            /* border: 1px solid black; */
+            width: 100% !important;
+        }
+
+        .submit{
+            width: 100% !important;
+            height: 3rem !important;
+            font-size: 1.1rem ;
+            border-radius: 0.2rem;
+            border: none;
+        }
+
+        form{
+            width: 100% !important;
+        }
+    }
 </style>
 
 {% endblock content %}

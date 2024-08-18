@@ -4,9 +4,9 @@
 {% block content %}
 <div class="container w-100 mt-4  mb-5">
     <h1 class="text-center text-success ">₦{{ amount }}</h1>
-    <h1 class="text-center">SUCCESS <i class="fas fa-check-circle text-success"></i></h1>
+    <h1 class="text-center success">SUCCESS <i class="fas fa-check-circle text-success"></i></h1>
     <p class="text-center date">{{ date }}</p>
-        <hr class="w-50 mx-auto">
+        <hr class="w-50 mx-auto line">
         <div class="content w-50 mx-auto ">
             <div class="type mx-auto">
                 <p>Transaction Type</p>
@@ -52,14 +52,14 @@
 
             <div class="footer text-center">
                 <!-- <div class="text-center"> -->
-                    <p>Contact</p>
+                    <p class="contact">Contact</p>
                     <span ><a class="mb-5" style="margin-bottom: 2rem;"  href="#">ng-support@Wallet-inc.com</a></span>
                 
                 <p style="font-size: 1rem;">
                     Enjoy a better life with wallet. Get free transfers, withdrawals, free bill payments. Instant loans and up to 15% interest. on savings.
                     Opay is licenced by the Central Bank of Nigeria and insured by the NDIC.
                 </p>
-                </div>
+            </div>
 
 
         </div>
@@ -92,6 +92,46 @@
         a span{
             text-decoration: none;
             color: purple;
+        }
+
+
+        @media screen and (max-width: 576px) {
+
+            .container{
+                /* border: 1px solid black; */
+
+            }
+
+            .content{
+                /* border: 1px solid black; */
+                width: 100% !important;
+            }
+
+            p{
+                font-size: 0.8rem !important;
+            }
+
+            h1{
+                font-size: 1.5rem !important;
+            }
+
+            .success{
+                font-size: 1rem !important;
+            }
+
+            .line{
+                width: 100% !important;
+            }
+
+            .contact{
+                font-size: 1rem !important;
+                font-weight: bold;
+                margin-top: 1rem !important;
+            }
+
+            span{
+                margin-top: -1rem !important;
+            }
         }
 
         
