@@ -57,6 +57,7 @@ class TransactionHistory(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     phone_number = db.Column(db.String(20), unique=True)
     narration = db.Column(db.String(2000))
+    wallet_balance= db.Column(db.Float, default=0.00)
 
 
 
@@ -76,6 +77,8 @@ class Receipts(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     phone_number = db.Column(db.String(20), unique=True)
     narration = db.Column(db.String(2000))
+    wallet_balance= db.Column(db.Float, default=0.00)
+
     
 
     def __repr__(self):

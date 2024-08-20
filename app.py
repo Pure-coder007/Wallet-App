@@ -50,7 +50,18 @@ app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
 }
 
 # Initializing extensions
-db = SQLAlchemy(app)
+from sqlalchemy import MetaData
+
+
+naming_convention = {
+    "ix": 'ix_%(column_0_label)s',
+    "uq": "uq_%(table_name)s_%(column_0_name)s",
+    "ck": "ck_%(table_name)s_%(column_0_name)s",
+    "fk": "fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s",
+    "pk": "pk_%(table_name)s"
+}
+
+db = SQLAlchemy(app, metadata=MetaData(naming_convention=naming_convention))
 bcrypt = Bcrypt(app)
 login_manager = LoginManager(app)
 
@@ -195,7 +206,11 @@ def token(email):
         print(f'Entered OTP: {otp}')
         print(f'Session OTP: {session.get("otp")}')
         if otp == session.get('otp'):
-            send_mail(email, 'You have successfully registered on Amebo Wallet. You also received ₦100,000.00 as your sign up bonus. Thank you')
+            send_mail(
+                email=email,
+                subject="Welcome to Amebo Wallet!",
+                message_body="You have been successfully registered on Amebo Wallet. You also received ₦100,000.00 as your sign-up bonus. Thank you!"
+                )
             give_100k(email)
             flash('Registration successful. You can now login.', 'success')
             return redirect(url_for('login'))
@@ -385,12 +400,102 @@ def generate_transaction_ref():
             return transaction_ref
 
         # Optionally, add a counter or timestamp to ensure uniqueness if collisions happen frequently
+
+
+
+def send_mail(email, subject, message_body):
+    msg = Message(subject=subject, 
+                  sender=app.config['MAIL_USERNAME'], 
+                  recipients=[email])
+    msg.body = message_body
+    
+    mail.send(msg)
+
+
+
+
+
+# Generating an email to the sender and receiver of the transaction
+
+def send_receipt_email(email, transaction_details):
+    subject = "Transaction Receipt from Amebo Wallet"
+
+    # HTML email content with a table and logo
+    message_body = f"""
+    <html>
+    <body>
+        <div style="text-align: center;">
+            <img src="https://res.cloudinary.com/duyoxldib/image/upload/v1724157721/Untitled_design_2_1_hngomm.png" alt="Amebo Wallet Logo" style="width:150px; height:auto;"/>
+        </div>
+        <h3>Transaction Receipt</h3>
+        <p>Thank you for using Amebo Wallet. Below are the details of your recent transaction:</p>
+        <table border="1" cellpadding="10" cellspacing="0" style="width:100%; border-collapse: collapse;">
+            <tr>
+                <th style="text-align: left;">Transaction Type</th>
+                <td>{transaction_details['transaction_type']}</td>
+            </tr>
+            <tr>
+                <th style="text-align: left;">Amount</th>
+                <td>₦{transaction_details['amount']}</td>
+            </tr>
+
+            <tr>
+                <th style="text-align: left;">Current Balance</th>
+                <td>₦{transaction_details['wallet_balance']}</td>
+            </tr>
+            <tr>
+                <th style="text-align: left;">Sender</th>
+                <td>{transaction_details['sender']}</td>
+            </tr>
+            <tr>
+                <th style="text-align: left;">Receiver</th>
+                <td>{transaction_details['receiver']}</td>
+            </tr>
+            <tr>
+                <th style="text-align: left;">Date</th>
+                <td>{transaction_details['date']}</td>
+            </tr>
+            <tr>
+                <th style="text-align: left;">Transaction Reference</th>
+                <td>{transaction_details['transaction_ref']}</td>
+            </tr>
+
+            <tr>
+                <th style="text-align: left;">Remark</th>
+                <td>{transaction_details['narration']}</td>
+            </tr>
+        </table>
+        <br>
+        <p><p style="font-weight:600;">Remember:</p> Keep your your pin and login information safe. Do not respond to emails requesting for your login/PIN details.</p>
+        <br>
+        <p>We appreciate your continued trust in us.</p>
+        <p>Best regards,<br>The Amebo Wallet Team</p>
+    </body>
+    <br>
+    <br>
+    </html>
+    <br>
+    <br>
+    """
+
+    msg = Message(subject=subject, 
+                  sender=app.config['MAIL_USERNAME'], 
+                  recipients=[email])
+    
+    # Set the HTML body
+    msg.html = message_body
+
+    mail.send(msg)
+
+
+
+
+
 @app.route('/final_wallet/<acct_number>', methods=['GET', 'POST'])
 def final_wallet(acct_number):
     from models import User, TransactionHistory, Receipts
     from sqlite3 import IntegrityError
 
-    
     user = current_user
     account_owner = User.query.filter_by(phone_number=acct_number).first()
     
@@ -416,9 +521,8 @@ def final_wallet(acct_number):
 
             while True:
                 transaction_ref = generate_transaction_ref()
-                print(transaction_ref, "pppppppppppaaaaaaaaaaa")
 
-                # Record debit transaction for the sender
+                # Record debit and credit transactions
                 debit_transaction = TransactionHistory(
                     user_id=user.id,
                     sender=user.first_name + ' ' + user.last_name,
@@ -431,12 +535,13 @@ def final_wallet(acct_number):
                     bank_name='Wallet Transfer',
                     date=datetime.utcnow(),
                     transaction_ref=transaction_ref,
-                    session_id=session_id
-
-
+                    session_id=session_id,
+                    wallet_balance=user.wallet_balance
                 )
+                print(debit_transaction, "DEBIT")
 
-                # Record credit transaction for the receiver
+                
+
                 credit_transaction = TransactionHistory(
                     user_id=account_owner.id,
                     sender=user.first_name + ' ' + user.last_name,
@@ -449,10 +554,14 @@ def final_wallet(acct_number):
                     bank_name='Wallet Transfer',
                     date=datetime.utcnow(),
                     transaction_ref=transaction_ref,
-                    session_id=session_id
+                    session_id=session_id,
+                    wallet_balance=account_owner.wallet_balance
                 )
 
-                # Creating receipts for both sender and receiver
+                print(credit_transaction, "credit")
+
+
+                # Create receipts for both sender and receiver
                 receipt_transaction_sender = Receipts(
                     sender=user.first_name + ' ' + user.last_name,
                     amount=amount_float,
@@ -464,8 +573,12 @@ def final_wallet(acct_number):
                     date=datetime.utcnow(),
                     transaction_ref=transaction_ref,
                     session_id=session_id,
-                    narration=message
+                    narration=message,
+                    wallet_balance=user.wallet_balance
                 )
+
+                print(receipt_transaction_sender, "receipt_transaction_sender")
+
 
                 receipt_transaction_receiver = Receipts(
                     sender=user.first_name + ' ' + user.last_name,
@@ -478,8 +591,11 @@ def final_wallet(acct_number):
                     date=datetime.utcnow(),
                     transaction_ref=transaction_ref,
                     session_id=session_id,
-                    narration=message
+                    narration=message,
+                    wallet_balance=account_owner.wallet_balance
                 )
+                print(receipt_transaction_receiver, "receipt_transaction_receiver")
+                
 
                 try:
                     db.session.add(debit_transaction)
@@ -487,6 +603,36 @@ def final_wallet(acct_number):
                     db.session.add(receipt_transaction_sender)
                     db.session.add(receipt_transaction_receiver)
                     db.session.commit()
+
+                    # format the wallet balance
+                    formatted_wallet_balance = "{:,.0f}".format(user.wallet_balance)
+                    formatted_wallet_balance_receipt = "{:,.0f}".format(account_owner.wallet_balance)
+
+                    # Send email receipts to both sender and receiver
+                    transaction_details_sender = {
+                        "transaction_type": "Debit",
+                        "amount": formatted_amount_receipt,
+                        "sender": user.first_name + ' ' + user.last_name,
+                        "receiver": account_owner.first_name + ' ' + account_owner.last_name,
+                        "date": datetime.utcnow().strftime('%b %d, %Y %I:%M %p'),
+                        "transaction_ref": transaction_ref,
+                        "narration": message,
+                        "wallet_balance": formatted_wallet_balance
+                    }
+
+                    transaction_details_receiver = {
+                        "transaction_type": "Credit",
+                        "amount": formatted_amount_receipt,
+                        "sender": user.first_name + ' ' + user.last_name,
+                        "receiver": account_owner.first_name + ' ' + account_owner.last_name,
+                        "date": datetime.utcnow().strftime('%b %d, %Y %I:%M %p'),
+                        "transaction_ref": transaction_ref,
+                        "narration": message,
+                        "wallet_balance": formatted_wallet_balance_receipt
+                    }
+
+                    send_receipt_email(user.email, transaction_details_sender)  # Email to sender
+                    send_receipt_email(account_owner.email, transaction_details_receiver)  # Email to receiver
 
                     session.pop('recipient_phone', None)
                     session.pop('amount', None)
@@ -497,11 +643,10 @@ def final_wallet(acct_number):
                     formatted_date = formatted_date.replace(' 1,', ' 1st,').replace(' 2,', ' 2nd,').replace(' 3,', ' 3rd,').replace(' 21,', ' 21st,').replace(' 22,', ' 22nd,').replace(' 23,', ' 23rd,').replace(' 31,', ' 31st,')
 
                     flash('Transaction successful', 'success')
-                    return render_template('receipt.html', amount=formatted_amount_receipt,  sender=user.first_name + ' ' + user.last_name, receiver=account_owner.first_name + ' ' + account_owner.last_name, transaction_ref=transaction_ref, session_id=session_id, bank_name='Wallet Transfer', date=formatted_date, sender_account=user.phone_number, receiver_account=account_owner.phone_number, narration=message)
+                    return render_template('receipt.html', amount=formatted_amount_receipt, sender=user.first_name + ' ' + user.last_name, receiver=account_owner.first_name + ' ' + account_owner.last_name, transaction_ref=transaction_ref, session_id=session_id, bank_name='Wallet Transfer', date=formatted_date, sender_account=user.phone_number, receiver_account=account_owner.phone_number, narration=message)
                 except IntegrityError as e:
                     if 'UNIQUE constraint failed' in str(e):
                         db.session.rollback()
-                        # Regenerate transaction_ref and try again
                         continue
                     else:
                         raise e
@@ -509,11 +654,12 @@ def final_wallet(acct_number):
                     db.session.rollback()
                     flash('Transaction failed due to an error: ' + str(e), 'danger')
                     break
-
         else:
             flash('Incorrect transaction pin', 'danger')
-    
+
     return render_template('final_wallet.html', account_owner=account_owner, amount=formatted_amount, message=message)
+
+
 
 
 
@@ -544,3 +690,5 @@ def view_receipt(receipt_id):
     receipt = TransactionHistory.query.get_or_404(receipt_id)
     print(receipt, "VVVVVVVVVVVVVVVVVVVVVV")
     return render_template('view_receipt.html', receipt=receipt)
+
+

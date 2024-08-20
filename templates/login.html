@@ -38,13 +38,13 @@
                         
                         <div class="col-12">
                           <div class="form-floating mb-3">
-                            <input type="email" class="form-control" name="email" id="email" placeholder="name@example.com" required>
+                            <input type="email" class="form-control space shadow-none border-0" name="email" id="email" placeholder="name@example.com" required>
                             <label for="email" class="form-label">Email</label>
                           </div>
                         </div>
                         <div class="col-12">
                           <div class="form-floating mb-3">
-                            <input type="password" class="form-control" name="password" id="password" value="" placeholder="Password" required>
+                            <input type="password" class="form-control space shadow-none border-0" name="password" id="password" value="" placeholder="Password" required>
                             <label for="password" class="form-label">Password</label>
                             <!-- <div id="passwordError" class="error" style="color: red; font-size: 1px;"></div> -->
                           </div>
@@ -52,7 +52,7 @@
                         
                         <div class="col-12">
                           <div class="d-grid">
-                            <button class="btn btn-dark btn-lg" type="submit" id="" value="Next"  style="cursor: pointer; background-color: #190378; color: #f3f3f3;">Sign in</button>
+                            <button class="btn btn-dark btn-lg submit" type="submit" id="" value="Next"  style="cursor: pointer; background-color: #190378; color: #f3f3f3;">Sign in</button>
                           </div>
                         </div>
                       </div>
@@ -117,6 +117,51 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+
+
+        @media screen and (max-width: 576px) {
+
+          .submit{
+            border-radius: 0.2rem !important;
+            font-size: 1rem !important;
+          }
+
+.content{
+    /* border: 1px solid black; */
+    width: 100% !important;
+}
+
+p{
+    font-size: 0.8rem !important;
+}
+
+h1{
+    font-size: 1.5rem !important;
+}
+
+.space{
+    font-size: 1rem !important;
+    width: 100% !important;
+    height: 0.5rem !important;
+    border-radius: 0.2rem !important;
+    border: 1px solid whitesmoke !important;
+
+}
+
+.line{
+    width: 100% !important;
+}
+
+.contact{
+    font-size: 1rem !important;
+    font-weight: bold;
+    margin-top: 1rem !important;
+}
+
+span{
+    margin-top: -1rem !important;
+}
+}
   </style>
 
    <!-- JavaScript for showing loader -->

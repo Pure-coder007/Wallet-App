@@ -36,32 +36,32 @@
                       <div class="row gy-3 overflow-hidden">
                         <div class="col-12">
                           <div class="form-floating mb-3">
-                            <input type="text" class="form-control" name="first_name" id="firstName" placeholder="First Name" required>
+                            <input type="text" class="form-control space  shadow-none border-0 " name="first_name" id="firstName" placeholder="First Name" required>
                             <label for="firstName" class="form-label">First Name</label>
                           </div>
                         </div>
                         <div class="col-12">
                           <div class="form-floating mb-3">
-                            <input type="text" class="form-control" name="last_name" id="lastName" placeholder="First Name" required>
+                            <input type="text" class="form-control space shadow-none border-0" name="last_name" id="lastName" placeholder="First Name" required>
                             <label for="lastName" class="form-label">Last Name</label>
                           </div>
                         </div>
                         <div class="col-12">
                           <div class="form-floating mb-3">
-                            <input type="email" class="form-control" name="email" id="email" placeholder="name@example.com" required>
+                            <input type="email" class="form-control space shadow-none border-0" name="email" id="email" placeholder="name@example.com" required>
                             <label for="email" class="form-label">Email</label>
                           </div>
                         </div>
 
                         <div class="col-12">
                           <div class="form-floating mb-3">
-                            <input type="text" class="form-control" name="phone_number" id="phone_number" placeholder="name@example.com" required>
+                            <input type="text" class="form-control space shadow-none border-0" name="phone_number" id="phone_number" placeholder="name@example.com" required>
                             <label for="phone_number" class="form-label">Phone</label>
                           </div>
                         </div>
                         <div class="col-12">
                           <div class="form-floating mb-3">
-                            <input type="password" class="form-control" name="password" id="password" value="" placeholder="Password" required>
+                            <input type="password" class="form-control space shadow-none border-0" name="password" id="password" value="" placeholder="Password" required>
                             <label for="password" class="form-label">Password</label>
                             <div id="passwordError" class="error" style="color: red; font-size: 1px;"></div>
                           </div>
@@ -69,7 +69,7 @@
 
                         <div class="col-12">
                           <div class="form-floating mb-3">
-                            <input type="password" class="form-control" name="confirm_password" id="password" value="" placeholder="Password" required>
+                            <input type="password" class="form-control space shadow-none border-0" name="confirm_password" id="password" value="" placeholder="Password" required>
                             <label for="password" class="form-label">Confirm Password</label>
                             <div id="passwordError" class="error" style="color: red; font-size: 1px;"></div>
                           </div>
@@ -77,7 +77,7 @@
 
                         <div class="col-12">
                           <div class="form-check">
-                            <input class="form-check-input" type="checkbox" value="" name="termsCheckbox" id="termsCheckbox" required>
+                            <input class="form-check-input shadow-none border-0 check" type="checkbox" value="" name="termsCheckbox" id="termsCheckbox" required>
                             <label class="form-check-label text-secondary" for="termsCheckbox">
                               I agree to the <a href="#!" class="link-primary text-decoration-none">terms and conditions</a>
                             </label>
@@ -85,7 +85,7 @@
                         </div>
                         <div class="col-12">
                           <div class="d-grid">
-                            <button class="btn btn-dark btn-lg" type="submit" id="submitButton" value="Next" disabled style="cursor: not-allowed; background-color: #190378; color: #f3f3f3;">Sign up</button>
+                            <button class="btn btn-dark btn-lg shadow-none submit" type="submit" id="submitButton" value="Next" disabled style="cursor: not-allowed; background-color: #190378; color: #f3f3f3;">Sign up</button>
                           </div>
                         </div>
                       </div>
@@ -115,6 +115,10 @@
     .faded-button {
         opacity: 0.5; /* Adjust the opacity to your preference */
         cursor: not-allowed;
+    }
+
+    .space{
+      border: 1px solid whitesmoke !important;
     }
 
     #loader {
@@ -149,6 +153,27 @@
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
+        }
+
+
+        @media screen and (max-width: 576px) {
+          .space{
+            width: 100% !important;
+            height: 2.3rem !important;
+            border-radius: 0.2rem !important;
+            font-size: 1rem !important;
+            border: 1px solid whitesmoke !important;
+          }
+
+          .check{
+            border: 1px solid whitesmoke !important;
+          }
+
+          .submit{
+            border-radius: 0.2rem !important;
+            font-size: 1rem !important;
+          }
+
         }
   </style>
 
