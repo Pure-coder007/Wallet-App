@@ -6,22 +6,20 @@
     <br>
 
     <div class="transfer_form mx-auto">
-    
         <form action="" method="POST" class="mx-auto ">
-            
             <img 
             {% if account_owner.profile_pic %} 
                 src="{{ account_owner.profile_pic }}" 
-                {% else %}
+            {% else %}
                 src="{{ url_for('static', filename='images/default.jpeg') }}" 
-                {% endif %} 
-                alt="Profile Picture"
-                class="rounded-circle article-img profile_pic m-auto border d-flex justify-content-center" 
-                id="display_picture"
-                style="width: 120px; height: 120px; border-radius: 50%; cursor: pointer;"
-                >
-                <br>
-                <div class="mx-auto transfer_form w-50">
+            {% endif %} 
+            alt="Profile Picture"
+            class="rounded-circle article-img profile_pic m-auto border d-flex justify-content-center" 
+            id="display_picture"
+            style="width: 120px; height: 120px; border-radius: 50%; cursor: pointer;"
+            >
+            <br>
+            <div class="mx-auto transfer_form w-50">
                 <h2>Complete Your Transaction</h2>
                 <br>
                 <div class="form-group">
@@ -30,55 +28,127 @@
                 </div>
                 <br>
                 
-                
                 <div class="form-group">
                     <label for="amount">Amount</label>
                     <input type="text" class="form-control space" id="amount" name="amount" value="₦{{ amount }}" required disabled>
                 </div>
                 
                 <br>
-                <div class="form-group">
-                    <label for="message">Transaction Pin</label>
-                    <input type="password" class="form-control shadow-none space" id="message" name="pin" required placeholder="4 - digit transaction pin">
+                <div class="form-group position-relative">
+                    <label for="pin">Transaction Pin</label>
+                    <input type="password" class="form-control shadow-none space" id="pin" name="pin" required placeholder="4 - digit transaction pin">
+                    <span id="showPasswordIcon" class="position-absolute" style="cursor: pointer; right: 10px; top: 50%; transform: translateY(-50%);">
+                        <i class="fa fa-eye" aria-hidden="true"></i>
+                    </span>
                 </div>
                 <br>
                 <div class="form-group">
                     <button type="submit" class="submit btn-primary">Proceed</button>
                 </div>
             </div>
-
         </form>
     </div>
 
-        <br><br>
+    <br><br>
+</div>
+
+<!-- Loader HTML -->
+<div id="loader" style="display: none;">
+    <div class="loader-container">
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+    </div>
 </div>
 
 <style>
+    #loader {
+        display: flex; /* Use flexbox */
+        justify-content: center; /* Center horizontally */
+        align-items: center; /* Center vertically */
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(255, 255, 255, 0.7); /* Semi-transparent white background */
+        z-index: 9999; /* Ensure loader appears on top of other elements */
+    }
+    
+    .loader-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .dot {
+        width: 15px;
+        height: 15px;
+        margin: 0 5px;
+        border-radius: 50%;
+        background-color: #3498db; /* Blue */
+        animation: bounce 0.6s infinite alternate;
+    }
+
+    .dot:nth-child(2) {
+        animation-delay: 0.2s;
+    }
+
+    .dot:nth-child(3) {
+        animation-delay: 0.4s;
+    }
+
+    @keyframes bounce {
+        to {
+            transform: translateY(-20px);
+        }
+    }
+
     @media screen and (max-width: 576px) {
-        .space{
+        .space {
             width: 100% !important;
             height: 2.3rem !important;
             border-radius: 0.2rem !important;
         }
 
-        .transfer_form{
+        .transfer_form {
             margin-top: 1rem;
-            /* border: 1px solid black; */
             width: 100% !important;
         }
 
-        .submit{
+        .submit {
             width: 100% !important;
             height: 3rem !important;
-            font-size: 1.1rem ;
+            font-size: 1.1rem;
             border-radius: 0.2rem;
             border: none;
         }
 
-        form{
+        form {
             width: 100% !important;
         }
     }
 </style>
+
+<!-- JavaScript for showing loader -->
+<script>
+    document.querySelector("form").addEventListener("submit", function() {
+        document.getElementById("loader").style.display = "flex"; // Display loader
+    });
+
+    // Show/Hide Password Toggle
+    document.getElementById("showPasswordIcon").addEventListener("click", function () {
+        var passwordField = document.getElementById("pin");
+        if (passwordField.type === "password") {
+            passwordField.type = "text";
+            this.querySelector("i").classList.remove("fa-eye");
+            this.querySelector("i").classList.add("fa-eye-slash");
+        } else {
+            passwordField.type = "password";
+            this.querySelector("i").classList.remove("fa-eye-slash");
+            this.querySelector("i").classList.add("fa-eye");
+        }
+    });
+</script>
 
 {% endblock content %}

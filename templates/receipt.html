@@ -1,139 +1,225 @@
 {% extends "layout.html" %}
 
-
 {% block content %}
-<div class="container w-100 mt-4  mb-5">
-    <h1 class="text-center text-success ">₦{{ amount }}</h1>
-    <h1 class="text-center success">SUCCESS <i class="fas fa-check-circle text-success"></i></h1>
-    <p class="text-center date">{{ date }}</p>
-        <hr class="w-50 mx-auto line">
-        <div class="content w-50 mx-auto ">
-            <div class="type mx-auto">
-                <p>Transaction Type</p>
-                <p style="font-weight: 900;">{{ bank_name }}</p>
+<div class="container w-100 mt-4 mb-5">
+    <h1 class="text-center text-success fade-in">₦{{ amount }}</h1>
+    <h1 class="text-center success fade-in">SUCCESS <i class="fas fa-check-circle text-success bounce"></i></h1>
+    <p class="text-center date fade-in">{{ date }}</p>
+    <hr class="w-50 mx-auto line">
+    <div class="content w-50 mx-auto ">
+        <div class="type mx-auto">
+            <p>Transaction Type</p>
+            <p style="font-weight: 900;">{{ bank_name }}</p>
+        </div>
+
+        <div class="receiver mx-auto">
+            <p>Recipient Details</p>
+            <div>
+                <p style="font-weight: 900;">{{ receiver }}</p>
+                <p style="font-size: 1rem;">{{ bank_name }} | {{ receiver_account }}</p>
             </div>
-            
+        </div>
 
-            <div class="receiver  mx-auto" >
-                <p>Recipient Details</p>
-                
-                    <div>
-                        <p style="font-weight: 900;"> {{ receiver }}</p>
-                        <p style="font-size: 1rem;">{{ bank_name }} | {{ receiver_account }}</p>
-                    </div>
-                
+        <div class="sender">
+            <p>Sender Details</p>
+            <div>
+                <p style="font-weight: 900;">{{ sender }}</p>
+                <p style="font-size: 1rem;">{{ bank_name }} | {{ sender_account }}</p>
             </div>
-            
+        </div>
 
-            <div class="sender">
-                <p>Sender Details</p>
-                <div>
-                    <p style="font-weight: 900; ">{{ sender }}</p>
-                    <p style="font-size: 1rem; ">{{ bank_name }} | {{ sender_account }}</p>
-                </div>
-            </div>
-            
+        <div class="remark">
+            <p>Remark</p>
+            <p style="font-size: 1rem;">{{ narration }}</p>
+        </div>
 
-            <div class="remark">
-                <p>Remark</p>
-                <p style="font-size: 1rem;">{{ narration }}</p>
-            </div>
-            
-            <div class="ref">
-                <p>Transaction Reference</p>
-                <p style="font-size: 1rem; ">{{ transaction_ref }}</p>
-            </div>
+        <div class="ref">
+            <p>Transaction Reference</p>
+            <p style="font-size: 1rem;">{{ transaction_ref }}</p>
+        </div>
 
-            <div class="session">
-                <p>Session ID</p>
-                <p style="font-size: 1rem; ">{{ session_id }}</p>
-            </div>
+        <div class="session">
+            <p>Session ID</p>
+            <p style="font-size: 1rem;">{{ session_id }}</p>
+        </div>
 
+        <div class="footer text-center">
+            <p class="contact">Contact</p>
+            <span><a class="mb-5" style="margin-bottom: 2rem;" href="#">ng-support@Wallet-inc.com</a></span>
 
-            <div class="footer text-center">
-                <!-- <div class="text-center"> -->
-                    <p class="contact">Contact</p>
-                    <span ><a class="mb-5" style="margin-bottom: 2rem;"  href="#">ng-support@Wallet-inc.com</a></span>
-                
-                <p style="font-size: 1rem;">
-                    Enjoy a better life with wallet. Get free transfers, withdrawals, free bill payments. Instant loans and up to 15% interest. on savings.
-                    Opay is licenced by the Central Bank of Nigeria and insured by the NDIC.
-                </p>
-            </div>
-
-
+            <p style="font-size: 1rem;">
+                Enjoy a better life with wallet. Get free transfers, withdrawals, free bill payments. Instant loans and up to 15% interest on savings.
+                Opay is licensed by the Central Bank of Nigeria and insured by the NDIC.
+            </p>
         </div>
     </div>
+</div>
 
+<div class="fireworks-container">
+    <div class="firework"></div>
+    <div class="firework"></div>
+    <div class="firework"></div>
+</div>
 
-    <style>
-        .type, .remark, .ref, .session {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            grid-gap: 3rem;
+<style>
+    .fade-in {
+        opacity: 0;
+        animation: fadeIn 1s forwards;
+    }
+
+    @keyframes fadeIn {
+        to {
+            opacity: 1;
+        }
+    }
+
+    .bounce {
+        display: inline-block;
+        animation: bounce 1s infinite;
+    }
+
+    @keyframes bounce {
+        0%, 20%, 50%, 80%, 100% {
+            transform: translateY(0);
+        }
+        40% {
+            transform: translateY(-10px);
+        }
+        60% {
+            transform: translateY(-5px);
+        }
+    }
+
+    .fireworks-container {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        overflow: hidden;
+    }
+
+    .firework {
+        position: absolute;
+        bottom: 100%;
+        width: 10px;
+        height: 10px;
+        background-color: rgba(255, 215, 0, 0.8);
+        border-radius: 50%;
+        animation: explode 1s forwards;
+        opacity: 0;
+    }
+
+    @keyframes explode {
+        0% {
+            transform: translateY(0) scale(1);
+            opacity: 1;
+        }
+        50% {
+            transform: translateY(-150px) scale(2);
+            opacity: 1;
+        }
+        100% {
+            transform: translateY(-200px) scale(0);
+            opacity: 0;
+        }
+    }
+
+    .firework:nth-child(1) {
+        left: 20%;
+        animation-delay: 0s;
+    }
+
+    .firework:nth-child(2) {
+        left: 50%;
+        animation-delay: 0.2s;
+    }
+
+    .firework:nth-child(3) {
+        left: 80%;
+        animation-delay: 0.4s;
+    }
+
+    .type, .remark, .ref, .session {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-gap: 3rem;
+    }
+
+    .receiver, .sender {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-gap: 3rem;
+    }
+
+    p {
+        padding-left: 2rem;
+    }
+
+    .date {
+        font-size: 1.2rem;
+        font-weight: 600;
+    }
+
+    a span {
+        text-decoration: none;
+        color: purple;
+    }
+
+    @media screen and (max-width: 576px) {
+        .container {
+            /* border: 1px solid black; */
         }
 
-        .receiver, .sender {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            grid-gap: 3rem;
-            
+        .content {
+            /* border: 1px solid black; */
+            width: 100% !important;
         }
 
-        p{
-            padding-left: 2rem;
+        p {
+            font-size: 0.8rem !important;
         }
 
-        .date {
-            font-size: 1.2rem;
-            font-weight: 600;
+        h1 {
+            font-size: 1.5rem !important;
         }
 
-        a span{
-            text-decoration: none;
-            color: purple;
+        .success {
+            font-size: 1rem !important;
         }
 
-
-        @media screen and (max-width: 576px) {
-
-            .container{
-                /* border: 1px solid black; */
-
-            }
-
-            .content{
-                /* border: 1px solid black; */
-                width: 100% !important;
-            }
-
-            p{
-                font-size: 0.8rem !important;
-            }
-
-            h1{
-                font-size: 1.5rem !important;
-            }
-
-            .success{
-                font-size: 1rem !important;
-            }
-
-            .line{
-                width: 100% !important;
-            }
-
-            .contact{
-                font-size: 1rem !important;
-                font-weight: bold;
-                margin-top: 1rem !important;
-            }
-
-            span{
-                margin-top: -1rem !important;
-            }
+        .line {
+            width: 100% !important;
         }
 
-        
-    </style>
+        .contact {
+            font-size: 1rem !important;
+            font-weight: bold;
+            margin-top: 1rem !important;
+        }
+
+        span {
+            margin-top: -1rem !important;
+        }
+    }
+</style>
+
+<script>
+    // Trigger fade-in effect after a short delay
+    setTimeout(() => {
+        document.querySelectorAll('.fade-in').forEach(el => {
+            el.style.opacity = 1;
+        });
+    }, 100);
+
+    // Trigger fireworks animation
+    setTimeout(() => {
+        const fireworks = document.querySelectorAll('.firework');
+        fireworks.forEach((firework) => {
+            firework.style.opacity = 1; // Make the firework visible
+            firework.style.animation = `explode 1s forwards`;
+        });
+    }, 200);
+</script>
 {% endblock %}

@@ -42,6 +42,12 @@ app = Flask(__name__)
 
 
 # Configurations
+from datetime import timedelta
+
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=10)
+app.config['SESSION_PERMANENT'] = True
+app.config['SESSION_TYPE'] = 'filesystem'  # This can be used to store session data in the filesystem
+
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///wallet_app.db'
 secret_key =  'ssdfghjklreaertyuiytrewertyulhe3678oiytr43567iuiuytrewrtuyr3455'
 app.config['SECRET_KEY'] = 'thisismysecretkey'
@@ -225,15 +231,22 @@ def login():
     from models import User
     if request.method == 'POST':
         email = request.form['email']
-        password= request.form['password']
+        password = request.form['password']
         user = User.query.filter_by(email=email).first()
         if user and sha256_crypt.verify(password, user.password):
             login_user(user)
+            session.permanent = True  # Makes the session permanent
             flash('You are now logged in', 'success')
             return redirect(url_for('dashboard'))
         else:
             flash('Login Unsuccessful. Please check email and password', 'danger')
     return render_template('login.html')
+
+
+@app.before_request
+def before_request():
+    session.modified = True  # Update the session's last activity
+
 
 
 
@@ -247,31 +260,24 @@ def logout():
 
 
 
-
 @app.route('/dashboard', methods=['GET', 'POST'])
 @login_required
 def dashboard():
     user = current_user
     from models import TransactionHistory
 
+    # Get last 5 transactions
+    if user:
+        last_five = TransactionHistory.query.filter_by(user_id=user.id).order_by(TransactionHistory.date.desc()).limit(5).all()
+        print(last_five)
+
 
     if user:
-        # Getting Transaction History and format the date to display it like 'Jan 1st 2023'
+        # Get transaction history
         transactions = TransactionHistory.query.filter_by(user_id=user.id).order_by(TransactionHistory.date.desc()).all()
-        for transaction in transactions:
-            transaction.date = transaction.date.strftime('%b %d %Y')
         print(transactions)
 
     
-    # if user:
-    #     get_recent_transactions(user.id)
-
-
-    # # transactions = TransactionHistory.query.filter_by(user_id=user.id).order_by(TransactionHistory.date.desc()).all()
-
-
-
-    print(request.method, 'REQUEST')
 
     if request.method == 'POST':
         transaction_pin = request.form.get('transaction_pin')
@@ -281,9 +287,8 @@ def dashboard():
             flash('Transaction PINs do not match', 'warning')
             return redirect(url_for('dashboard'))
 
-        # hash the transaction pin
+        # Hash the transaction pin
         user.transaction_pin = sha256_crypt.hash(transaction_pin)
-
         db.session.commit()
 
         flash('Transaction PIN set successfully!', 'success')
@@ -310,8 +315,7 @@ def dashboard():
             'card_expiry_formatted': card_expiry_formatted
         }
 
-    return render_template('dashboard.html', user=user_data, transactions=transactions)
-
+    return render_template('dashboard.html', user=user_data, transactions=transactions, last_five=last_five)
 
 
 

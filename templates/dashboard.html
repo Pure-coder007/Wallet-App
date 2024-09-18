@@ -66,14 +66,15 @@
             
             <div class="first">
                 <div class="wallet wallet_img">
-                    <a href="{{ url_for('send_to_wallet')}}" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                    <!-- data-bs-toggle="modal" data-bs-target="#exampleModal" -->
+                    <a href="{{ url_for('send_to_wallet')}}" >
                 <img class=""  src="{{ url_for('static', filename='images/wallet.svg') }}" alt=""> 
             </a>
             <p class="to_wallet">To wallet</p>
                 </div>
                 
                 <div class="bank bank_img">
-                    <a href="#">
+                    <a href="">
                         <img class="" src="{{ url_for('static', filename='images/bank.svg') }}" alt=""> 
                     </a>
             <p class="to_bank">To Bank</p>
@@ -146,7 +147,7 @@
 
 
 <!-- Modal -->
-<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<!-- <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
@@ -164,7 +165,11 @@
                 
               </ul>
               <div class="tab-content" id="pills-tabContent">
-                <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">One</div>
+                {% for recent in last_five %}
+                <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
+                    <img src="" alt=""> <span>{{ recent.receiver }}</span> &nbsp; &nbsp; <span> {{ recent.receiver_account }}</span>
+                </div>
+                {% endfor %}
                 <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">Two</div>
               </div>
         </div>
@@ -174,20 +179,20 @@
         </div>
       </div>
     </div>
-  </div>
+  </div> -->
 
 
 
 
 
-<div class="modal applyLoanModal fade" id="applyLoan" tabindex="-1" aria-labelledby="applyLoanLabel" aria-hidden="true">
+<div class="modal applyLoanModal fade money_modal" id="applyLoan" tabindex="-1" aria-labelledby="applyLoanLabel" aria-hidden="true">
 	<div class="modal-dialog modal-dialog-centered">
 	  <div class="modal-content">
 		<div class="modal-header border-bottom-0">
 		  <h4 class="modal-title" id="exampleModalLabel">Where Do you Want To Send To?</h4>
 		  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 		</div>
-		<div class="modal-body">
+		<div class="modal-body money_modal2">
             <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
                 <li class="nav-item" role="presentation">
                   <button class="nav-link active" id="pills-home-tab" data-bs-toggle="pill" data-bs-target="#pills-home" type="button" role="tab" aria-controls="pills-home" aria-selected="true">Home</button>
@@ -646,7 +651,11 @@
         margin-left: -0.2rem !important;
        }
 
-
+       .money_modal2{
+        width: 25% !important;
+        font-size: 0.8rem !important;
+        border: 2px solid red;
+       }
 
        
     }
